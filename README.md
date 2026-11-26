@@ -1,8 +1,9 @@
-# Cosign — your agent proposes, you cosign
-
-> **Note:** Cosign is not a real, launched product yet. It's an early prototype I built part-time alongside my college studies, to test the idea and show how it would work. There are no real users, banks or money. Those are all simulated. I plan to keep building it.
+> [!IMPORTANT]
+> **Early prototype — not a launched product.** I built this part-time alongside my college studies to test the idea. There are no real users, banks or money. Those are all simulated.
 >
-> **Who did what:** The idea and the product decisions are mine: the problem, who it's for, the families-first then banks strategy, and what to build and leave out. The code was written with AI: the website, the backend, the tests and the documents were built with Claude (Anthropic's AI assistant), working from my direction. Details in [How I built this with AI](#how-i-built-this-with-ai).
+> **The idea is mine. The code is AI-built.** The idea and the product decisions (the problem, who it's for, the families-first then banks strategy, what to build and leave out) are mine. The website, backend, tests and documents were written with Claude (Anthropic's AI assistant), working from my direction. Details in [How I built this with AI](#how-i-built-this-with-ai).
+
+# Cosign — your agent proposes, you cosign
 
 [![CI](https://github.com/DineshSundrani7/cosign/actions/workflows/ci.yml/badge.svg)](https://github.com/DineshSundrani7/cosign/actions/workflows/ci.yml)
 
