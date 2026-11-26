@@ -1,6 +1,8 @@
 # Cosign — your agent proposes, you cosign
 
 > **Note:** Cosign is not a real, launched product yet. It's an early prototype I built part-time alongside my college studies, to test the idea and show how it would work. There are no real users, banks or money. Those are all simulated. I plan to keep building it.
+>
+> **Who did what:** The idea and the product decisions are mine: the problem, who it's for, the families-first then banks strategy, and what to build and leave out. The code was written with AI: the website, the backend, the tests and the documents were built with Claude (Anthropic's AI assistant), working from my direction. Details in [How I built this with AI](#how-i-built-this-with-ai).
 
 [![CI](https://github.com/DineshSundrani7/cosign/actions/workflows/ci.yml/badge.svg)](https://github.com/DineshSundrani7/cosign/actions/workflows/ci.yml)
 
@@ -30,7 +32,10 @@ cd server && npm install && npm run demo
 
 ## How I built this with AI
 
-Claude did the research legwork and wrote most of the code. I set the direction and made the product calls: the problem, the pivot from "a new payment rail" to "the person's decision layer on top of existing rails" after the competitor research, the name, and what to leave out.
+**The idea is mine. The code is AI-built.**
+
+- **Me (Dinesh):** the original idea, the problem and the persona, the pivot from "a new payment rail" to "the person's decision layer on top of existing rails" after the competitor research, the families-first then banks strategy, the name, the features, what to leave out, and reviewing and testing every version.
+- **Claude (AI):** the research legwork, and writing almost all of the code: the website, the backend (signing, policy engine, approval tokens, mock bank, hospital and e-sign desk, SQLite, MCP connector), the 21 tests, the CI setup and the design documents.
 
 ## What's in the site
 
