@@ -179,6 +179,21 @@ export function Hero() {
             <a href="#demo" className="rounded-full bg-ink px-6 py-3 font-semibold text-primary-foreground transition hover:bg-ink-soft">Try the live demo</a>
             <a href="#landscape" className="rounded-full border-2 border-ink px-6 py-3 font-semibold transition hover:bg-secondary">See the landscape</a>
           </div>
+          <div className="mt-8 max-w-[36rem]">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-gold">Who it's for</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <a href="#doors" className="group rounded-xl border border-border bg-background/80 p-4 backdrop-blur transition hover:border-ink">
+                <span className="rounded-full bg-gold-soft px-2.5 py-0.5 text-[11px] font-bold text-gold">Year 1 · direct</span>
+                <p className="mt-2 font-semibold">People and families</p>
+                <p className="mt-1 text-sm text-muted-foreground">A free connector for your AI assistant and a Family plan, so a parent's or teen's agent asks you before big actions.</p>
+              </a>
+              <a href="#doors" className="group rounded-xl border border-border bg-background/80 p-4 backdrop-blur transition hover:border-ink">
+                <span className="rounded-full bg-brand-soft px-2.5 py-0.5 text-[11px] font-bold text-brand">Year 2 · embedded</span>
+                <p className="mt-2 font-semibold">Banks and UPI apps</p>
+                <p className="mt-1 text-sm text-muted-foreground">An SDK they add to their app: no Cosign token, no agent payment. The bank holds the money, so it enforces the rule.</p>
+              </a>
+            </div>
+          </div>
         </div>
         <Slip />
       </div>
