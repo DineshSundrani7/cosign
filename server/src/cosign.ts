@@ -27,8 +27,20 @@ interface RequestRecord { id: string; body: RequestBody; hash: string; tier: Tie
 
 export interface PublicKeys { issuer: string; devices: Record<string, string>; revoked: string[] }
 
+/** Everything needed to rebuild the service after a restart (stored in SQLite by server.ts). */
+export interface Snapshot {
+  version: 1;
+  issuer: KeyPair;
+  users: (Omit<UserRecord, "knownPayees"> & { knownPayees: string[] })[];
+  agents: AgentRecord[];
+  requests: RequestRecord[];
+  seenNonces: string[];
+  revoked: string[];
+  merchantStock: [string, number][];
+}
+
 export class CosignService {
-  private readonly issuer: KeyPair = newKeyPair();
+  private issuer: KeyPair = newKeyPair();
   private readonly agents = new Map<string, AgentRecord>();
   private readonly users = new Map<string, UserRecord>();
   private readonly requests = new Map<string, RequestRecord>();
@@ -39,6 +51,34 @@ export class CosignService {
   readonly receipts = new ReceiptLog();
 
   constructor(private readonly now: () => number = Date.now) {}
+
+  /* ---------------- persistence ---------------- */
+
+  snapshot(): Snapshot {
+    return {
+      version: 1,
+      issuer: this.issuer,
+      users: [...this.users.values()].map((u) => ({ ...u, knownPayees: [...u.knownPayees] })),
+      agents: [...this.agents.values()],
+      requests: [...this.requests.values()],
+      seenNonces: [...this.seenNonces],
+      revoked: [...this.revoked],
+      merchantStock: [...this.merchantStock],
+    };
+  }
+
+  static restore(snap: Snapshot, receipts: import("./receipts.js").Receipt[], now: () => number = Date.now): CosignService {
+    const s = new CosignService(now);
+    s.issuer = snap.issuer;
+    for (const u of snap.users) s.users.set(u.address, { ...u, knownPayees: new Set(u.knownPayees) });
+    for (const a of snap.agents) s.agents.set(a.id, a);
+    for (const r of snap.requests) s.requests.set(r.id, r);
+    snap.seenNonces.forEach((n) => s.seenNonces.add(n));
+    snap.revoked.forEach((j) => s.revoked.add(j));
+    snap.merchantStock.forEach(([k, v]) => s.merchantStock.set(k, v));
+    s.receipts.restore(receipts);
+    return s;
+  }
 
   /* ---------------- setup ---------------- */
 

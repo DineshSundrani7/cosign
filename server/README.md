@@ -2,7 +2,7 @@
 
 The working core of Cosign: an AI agent asks, a person cosigns, and a bank refuses to act without a valid cosign.
 
-**Real:** Ed25519 signatures, the policy engine, PIN-locked device keys, single-use approval tokens, offline token verification, replay and tamper detection, rate limiting, Family Circle approvals, seller-claim checks against a stock feed, 48-hour undo and disputes, managing limits, a hash-chained receipt log, and an MCP connector for real AI assistants.
+**Real:** Ed25519 signatures, the policy engine, PIN-locked device keys, single-use approval tokens, offline token verification, replay and tamper detection, rate limiting, Family Circle approvals, seller-claim checks against a stock feed, 48-hour undo and disputes, managing limits, a hash-chained receipt log, SQLite persistence (state survives restarts; the receipt chain is re-verified on load), and an MCP connector for real AI assistants.
 **Simulated:** the bank, the money, and the phone's secure chip (a PIN-encrypted key file).
 
 ## Run it
@@ -13,8 +13,8 @@ Needs Node.js 20+.
 cd server
 npm install
 npm run demo     # plays ten scenarios end to end in the terminal
-npm test         # 16 automated tests
-npm start        # HTTP API + approval page on http://localhost:8787
+npm test         # 17 automated tests
+npm start        # HTTP API + approval page on http://localhost:8787, data saved in cosign.db (SQLite)
                  # kavya@cosign (PIN 1234) and her mother sunanda@cosign (big requests go to Kavya)
 ```
 
@@ -49,14 +49,21 @@ Request format: [`../design/SPEC.md`](../design/SPEC.md) · Threat model: [`../d
 
 3. Ask the assistant: "Renew my health insurance — ₹18,400 to Suraksha General." It calls `request_cosign`, gives you an approval link, waits for your PIN (1234), then calls `pay`. The mock bank refuses if you didn't approve.
 
+## Deploy the API
+
+- **Docker:** `docker build -t cosign-api server && docker run -p 8787:8787 -v cosign:/data cosign-api`
+- **Render (free tier):** New → Blueprint → pick this repo; it reads `render.yaml`. The free tier's disk is temporary, so data resets when the service restarts.
+- Settings: `PORT`, `COSIGN_DB` (SQLite file path), `COSIGN_ADMIN_TOKEN` (protects agent registration).
+
 ## API
 
 | Method | Path | What it does |
 |---|---|---|
 | GET | `/.well-known/cosign-keys` | Public keys executors use to verify tokens |
-| POST | `/agents` | Demo only: register an agent and get its key |
+| POST | `/agents` | Register an agent and get its key (needs `authorization: Bearer $COSIGN_ADMIN_TOKEN` when that variable is set) |
 | POST | `/requests` | Agent submits a signed request |
-| GET | `/requests/:id` | Status (agents poll this) |
+| GET | `/requests/:id` | Status |
+| GET | `/requests/:id/wait?timeout=25` | Long-poll: returns as soon as the person decides |
 | POST | `/requests/:id/approve` | `{ pin, numberMatch? }` |
 | POST | `/requests/:id/decline` | One-tap no |
 | GET | `/approve/:id` | Phone-style approval page |

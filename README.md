@@ -14,7 +14,7 @@ By 2040, personal AI agents pay, sign and share for us. India's payment rails (U
 
 | Folder | What it is | Real or simulated |
 |---|---|---|
-| `server/` | Cosign v0 backend: signed agent requests, policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, Family Circle approvals, seller-claim checks, 48-hour undo and disputes, a hash-chained receipt log, an MCP connector for real AI assistants, and 16 tests | Logic, signatures and checks are real; the bank and money are simulated |
+| `server/` | Cosign v0 backend: signed agent requests, policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, Family Circle approvals, seller-claim checks, 48-hour undo and disputes, a hash-chained receipt log, an MCP connector for real AI assistants, SQLite persistence and 17 tests | Logic, signatures and checks are real; the bank and money are simulated |
 | `src/` + `docs/index.html` | The website and its clickable phone prototype | Demo data is simulated |
 | `design/SPEC.md` | Draft request and token format, mapped to Google AP2, OpenID CIBA and UPI mandates | — |
 | `design/SECURITY.md` | How someone would attack Cosign and what stops them | — |

@@ -5,7 +5,8 @@
  *   GET  /.well-known/cosign-keys        public keys banks use to verify tokens offline
  *   POST /agents          {name, user}    demo only: registers an agent and returns its key
  *   POST /requests        SignedRequest   agent asks for a cosign
- *   GET  /requests/:id                    status (agents poll this)
+ *   GET  /requests/:id                    status
+ *   GET  /requests/:id/wait?timeout=25    long-poll until the person decides
  *   POST /requests/:id/approve {pin, numberMatch?}
  *   POST /requests/:id/decline
  *   GET  /approve/:id                     the approval page the user opens on their phone
@@ -23,9 +24,9 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { MockBank } from "./bank.js";
 import { CosignService, describe } from "./cosign.js";
+import { SqliteStore } from "./store.js";
 
-export function createApp() {
-  const cosign = new CosignService();
+function seed(cosign: CosignService) {
   cosign.registerUser("kavya@cosign", "1234", {
     mandates: [{ id: "groceries", category: "groceries", maxPerAction: 3000, maxPerMonth: 12000, expiresAt: Date.now() + 90 * 864e5 }],
     knownPayees: ["FreshBasket"],
@@ -36,7 +37,26 @@ export function createApp() {
     knownPayees: ["CarePlus Pharmacy"],
   });
   cosign.setMerchantStock("KartBazaar", 38);
+}
+
+/**
+ * dbPath: SQLite file for persistence (":memory:" or omit for none).
+ * adminToken: when set, registering agents needs the header `authorization: Bearer <token>`.
+ */
+export function createApp(opts: { dbPath?: string; adminToken?: string } = {}) {
+  const store = opts.dbPath ? new SqliteStore(opts.dbPath) : undefined;
+  const saved = store?.load();
+  let cosign: CosignService;
+  if (saved) {
+    cosign = CosignService.restore(saved.service, saved.receipts);
+  } else {
+    cosign = new CosignService();
+    seed(cosign);
+  }
   const bank = new MockBank(() => cosign.publicKeys());
+  if (saved?.bank) bank.restore(saved.bank as ReturnType<MockBank["snapshot"]>);
+  const persist = () => store?.save(cosign.snapshot(), bank.snapshot(), cosign.receipts.entries);
+  persist();
 
   const send = (res: ServerResponse, status: number, body: unknown, type = "application/json") => {
     res.writeHead(status, { "content-type": type, "access-control-allow-origin": "*", "access-control-allow-headers": "content-type" });
@@ -49,20 +69,29 @@ export function createApp() {
       req.on("end", () => { try { resolve(raw ? JSON.parse(raw) : {}); } catch { reject(new Error("Invalid JSON")); } });
     });
 
-  return createServer(async (req, res) => {
+  const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", "http://localhost");
     const parts = url.pathname.split("/").filter(Boolean);
+    if (req.method === "POST") res.on("finish", () => { if (res.statusCode < 400) persist(); });
     try {
       if (req.method === "OPTIONS") return send(res, 204, "");
       if (req.method === "GET" && url.pathname === "/health") return send(res, 200, { ok: true });
       if (req.method === "GET" && url.pathname === "/.well-known/cosign-keys") return send(res, 200, cosign.publicKeys());
       if (req.method === "POST" && url.pathname === "/agents") {
+        if (opts.adminToken && req.headers.authorization !== `Bearer ${opts.adminToken}`) return send(res, 401, { error: "Registering agents needs the admin token" });
         const { name, user } = await readJson(req);
         return send(res, 201, cosign.registerAgent(String(name ?? "Agent"), String(user ?? "kavya@cosign")));
       }
       if (req.method === "POST" && url.pathname === "/requests") return send(res, 200, cosign.submit(await readJson(req)));
       if (parts[0] === "requests" && parts[1]) {
         const id = parts[1];
+        if (req.method === "GET" && parts[2] === "wait") {
+          // Long-poll: agents wait here until the person decides (or the timeout passes)
+          const until = Date.now() + Math.min(30, Number(url.searchParams.get("timeout") ?? 25)) * 1000;
+          while (cosign.get(id)?.status === "pending" && Date.now() < until) await new Promise((r) => setTimeout(r, 400));
+          const r = cosign.get(id);
+          return r ? send(res, 200, r) : send(res, 404, { error: "Unknown request" });
+        }
         if (req.method === "GET" && parts.length === 2) {
           const r = cosign.get(id);
           return r ? send(res, 200, r) : send(res, 404, { error: "Unknown request" });
@@ -93,6 +122,8 @@ export function createApp() {
       return send(res, 400, { error: (e as Error).message });
     }
   });
+  server.on("close", () => store?.close());
+  return server;
 }
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]!);
@@ -112,5 +143,8 @@ const y=document.getElementById('yes');if(y){y.onclick=()=>go('approve',{pin:doc
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const port = Number(process.env.PORT ?? 8787);
-  createApp().listen(port, () => console.log(`Cosign v0 API on http://localhost:${port}  (user kavya@cosign, PIN 1234)`));
+  const dbPath = process.env.COSIGN_DB ?? "cosign.db";
+  createApp({ dbPath, adminToken: process.env.COSIGN_ADMIN_TOKEN }).listen(port, () =>
+    console.log(`Cosign v0 API on http://localhost:${port} · data in ${dbPath} · users kavya@cosign (PIN 1234), sunanda@cosign`),
+  );
 }

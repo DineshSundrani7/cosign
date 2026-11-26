@@ -34,6 +34,13 @@ export class MockBank {
   private txn = 0;
   constructor(private readonly keys: () => PublicKeys, private readonly now: () => number = Date.now) {}
 
+  snapshot() { return { used: [...this.used], txns: [...this.txns], txn: this.txn }; }
+  restore(s: ReturnType<MockBank["snapshot"]>) {
+    s.used.forEach((j) => this.used.add(j));
+    s.txns.forEach(([k, v]) => this.txns.set(k, v));
+    this.txn = s.txn;
+  }
+
   pay(p: PaymentInstruction): PaymentResult {
     if (!p.token) return { ok: false, reason: "Agent-initiated payments need a Cosign token" };
     const v = verifyToken(p.token, this.keys(), this.now());

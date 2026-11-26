@@ -1,0 +1,15 @@
+# One-click deploy of the Cosign v0 API on Render's free tier (render.com → New → Blueprint).
+# Note: the free tier's disk is temporary, so the SQLite data resets when the service restarts.
+services:
+  - type: web
+    name: cosign-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    envVars:
+      - key: COSIGN_DB
+        value: /tmp/cosign.db
+      - key: COSIGN_ADMIN_TOKEN
+        generateValue: true

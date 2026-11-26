@@ -33,7 +33,7 @@ export const FAQ: { q: string; a: string; keys: string[]; hidden?: boolean }[] =
   },
   {
     q: "Is this just a frontend?",
-    a: "No. There's a working v0 backend in the project's code: signed agent requests, a policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, Family Circle, undo and 16 automated tests. The “Try the real engine” section runs the same logic in your browser with real signatures. The bank and money are simulated.",
+    a: "No. There's a working v0 backend in the project's code: signed agent requests, a policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, Family Circle, undo, SQLite storage and 17 automated tests. The “Try the real engine” section runs the same logic in your browser with real signatures. The bank and money are simulated.",
     keys: ["frontend", "front end", "backend", "back end", "real code", "code", "github", "working", "built", "engine", "tests", "demo only", "just a website"],
   },
   {
@@ -83,7 +83,7 @@ export const FAQ: { q: string; a: string; keys: string[]; hidden?: boolean }[] =
   },
   {
     q: "Is Cosign a real product?",
-    a: "Not as a live product yet. Cosign is in development at DNS Labs: there is this clickable prototype and a working v0 backend (signed agent requests, approval tokens, Family Circle, undo, a mock bank and 16 tests). Banks, money and the people in the demo are simulated.",
+    a: "Not as a live product yet. Cosign is in development at DNS Labs: there is this clickable prototype and a working v0 backend (signed agent requests, approval tokens, Family Circle, undo, a mock bank, SQLite storage and 17 tests). Banks, money and the people in the demo are simulated.",
     keys: ["real", "available", "download", "launch", "release", "when", "app store", "play store", "sign up", "signup", "waitlist", "buy"],
   },
   {

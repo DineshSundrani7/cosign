@@ -28,6 +28,14 @@ export class ReceiptLog {
     return receipt;
   }
 
+  /** Loads receipts saved earlier (e.g. from the database) and checks they still chain. */
+  restore(entries: Receipt[]) {
+    this.entries.length = 0;
+    this.entries.push(...entries);
+    const v = this.verify();
+    if (!v.ok) throw new Error(`Stored receipt log is broken at #${v.brokenAt}`);
+  }
+
   /** Recomputes every hash. Returns the first broken index if the log was altered. */
   verify(): { ok: true } | { ok: false; brokenAt: number } {
     let prev = "GENESIS";

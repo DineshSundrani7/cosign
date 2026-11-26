@@ -90,9 +90,9 @@ export function BuildLog() {
     ["Researched the market with AI", "Used Claude to map 15+ players: NPCI's agent protocol, Pine Labs P3P, Razorpay, Visa, Mastercard, Google AP2, developer approval gateways and DPDP consent managers."],
     ["Pivoted on what we found", "The payment plumbing was already being built by much bigger players. So Cosign moved from “a new rail” to “the person's decision layer on top of the rails” — covering money, data and contracts — and got its new name."],
     ["Built a working prototype", "This website's phone demo, chat assistant, read-aloud and 2010–2040 journey — written in React with AI pair-programming."],
-    ["Built the core backend (v0)", "Real signed agent requests, a policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, Family Circle approvals, seller-claim checks, 48-hour undo, a hash-chained receipt log and an MCP connector so a real AI assistant must ask first. The bank and money are simulated."],
+    ["Built the core backend (v0)", "Real signed agent requests, a policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, Family Circle approvals, seller-claim checks, 48-hour undo, a hash-chained receipt log, SQLite persistence and an MCP connector so a real AI assistant must ask first. The bank and money are simulated."],
     ["Made it clickable", "A browser port of the engine on this page: real keys, signatures, PIN lock and bank checks running on the visitor's own device, so anyone can try the attacks."],
-    ["Tested it", "16 automated backend tests (forgery, tampering, replay, flooding, expired tokens, Family Circle, seller claims, undo, edited receipts), every demo scenario clicked through on desktop and phone sizes, and an automated WCAG 2.1 AA check with no violations."],
+    ["Tested it", "17 automated backend tests (forgery, tampering, replay, flooding, expired tokens, Family Circle, seller claims, undo, edited receipts, restarts), every demo scenario clicked through on desktop and phone sizes, and an automated WCAG 2.1 AA check with no violations."],
     ["What's next", "Five interviews with families managing a parent's finances, one conversation with a bank's digital team, and a pilot measuring regret rate and fraud stopped."],
   ];
   return (

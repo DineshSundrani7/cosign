@@ -21,7 +21,8 @@ let agent: AgentClient | undefined;
 const pending = new Map<string, { payee: string; amount: number }>();
 async function me() {
   if (!agent) {
-    const { agentId, privateKey } = await api("/agents", { name: "Claude assistant", user: USER });
+    const r = await fetch(BASE + "/agents", { method: "POST", headers: { "content-type": "application/json", ...(process.env.COSIGN_ADMIN_TOKEN ? { authorization: `Bearer ${process.env.COSIGN_ADMIN_TOKEN}` } : {}) }, body: JSON.stringify({ name: "Claude assistant", user: USER }) });
+    const { agentId, privateKey } = (await r.json()) as { agentId: string; privateKey: string };
     agent = new AgentClient(agentId, privateKey, USER);
   }
   return agent;
@@ -47,9 +48,9 @@ server.registerTool(
 
 server.registerTool(
   "check_cosign",
-  { title: "Check whether the user cosigned", description: "Returns the status of a cosign request.", inputSchema: { requestId: z.string() } },
+  { title: "Wait for the user's cosign", description: "Waits up to 20 seconds for the user to decide, then returns the status of the cosign request.", inputSchema: { requestId: z.string() } },
   async ({ requestId }) => {
-    const r = await api(`/requests/${requestId}`);
+    const r = await api(`/requests/${requestId}/wait?timeout=20`);
     return text(r.error ? r.error : `Status: ${r.status} (${r.tier}).${r.status === "approved" ? " You may now call pay." : ""}`);
   },
 );

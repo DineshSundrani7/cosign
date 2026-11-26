@@ -24,4 +24,4 @@ v0 is a prototype. "Covered" means there is working code and a test for it in `s
 | SIM swap / account takeover | Move someone's Cosign to a new phone | Device re-binding needs bank-grade KYC and a cooling-off period | Planned |
 | Agent skips Cosign | The agent pays directly | The bank refuses agent payments without a token — enforcement lives with whoever holds the money | Covered in the mock bank |
 
-Known v0 limits: in-memory storage, a software key standing in for a phone's secure chip, a demo-only `/agents` endpoint that hands out keys, no TLS, and an approval link instead of in-app push. None of these are production choices.
+Known v0 limits: a single SQLite file rather than a replicated database, a software key standing in for a phone's secure chip, an `/agents` endpoint that generates agent keys server-side (protected by an admin token), no TLS of its own, and an approval link instead of in-app push. None of these are production choices.

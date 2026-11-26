@@ -6,9 +6,9 @@
   "description": "Cosign v0: signed agent requests, policy engine, single-use approval tokens, mock bank enforcement and a tamper-evident receipt log.",
   "scripts": {
     "demo": "tsx src/demo.ts",
-    "start": "tsx src/server.ts",
+    "start": "NODE_NO_WARNINGS=1 tsx src/server.ts",
     "mcp": "tsx src/mcp.ts",
-    "test": "tsx --test test/*.test.ts",
+    "test": "NODE_NO_WARNINGS=1 tsx --test test/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "engines": {
@@ -16,11 +16,11 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.11",
-    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
-    "zod": "^4.6.7"
+    "zod": "^4.6.7",
+    "tsx": "^4.23.15"
   }
 }
