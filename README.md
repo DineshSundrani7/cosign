@@ -1,5 +1,7 @@
 # Cosign — your agent proposes, you cosign
 
+> **Note:** Cosign is not a real, launched product yet. It's an early prototype I built part-time alongside my college studies, to test the idea and show how it would work. There are no real users, banks or money. Those are all simulated. I plan to keep building it.
+
 [![CI](https://github.com/DineshSundrani7/cosign/actions/workflows/ci.yml/badge.svg)](https://github.com/DineshSundrani7/cosign/actions/workflows/ci.yml)
 
 A product I'm building at **DNS Labs** — Dinesh Sundrani. Status: **concept, clickable prototype and a working v0 backend · in development.**
