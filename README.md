@@ -58,6 +58,8 @@ All people, agents and sellers in the demo are fictional.
 
 GitHub Pages also works: Settings → Pages → deploy from branch `main`, folder `/docs`.
 
+After deploying, change `og:image` in `index.html` to the full address (for example `https://your-app.vercel.app/og.png`) so WhatsApp and LinkedIn show the preview card, then rebuild.
+
 ## The Ask Cosign chat
 
 The chat button answers from the FAQ in `src/components/cosign/faq.ts` — edit that file to change its answers. When the page runs on claude.ai it uses Claude for the answers; on Vercel it answers instantly from the FAQ, at no cost. For a live AI chatbot on Vercel you need an AI provider API key and a small server function, which costs money per message.

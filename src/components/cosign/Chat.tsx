@@ -123,7 +123,7 @@ export function FaqSection() {
     <section id="faq" className="px-5 py-20 md:py-24">
       <div className="mx-auto grid max-w-[1240px] gap-10 lg:grid-cols-[0.8fr_1.2fr]">
         <div>
-          <p className="text-sm font-semibold text-brand">FAQ</p>
+          <p className="text-sm font-semibold text-gold">FAQ</p>
           <h2 className="mt-2 text-[32px] font-semibold leading-[1.08] md:text-[46px]">Questions people ask first</h2>
           <p className="mt-4 text-[17px] text-muted-foreground">Can't find yours? Use the Ask Cosign button in the corner.</p>
         </div>

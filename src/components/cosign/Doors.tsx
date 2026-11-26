@@ -16,7 +16,7 @@ function Door({ label, sub, delay, children }: { label: string; sub: string; del
           style={{ transformOrigin: "left center" }}
           initial={{ rotateY: 0, opacity: 1 }}
           whileInView={{ rotateY: -108, opacity: 0 }}
-          viewport={{ once: true, amount: 0.6 }}
+          viewport={{ once: true, amount: 0.35 }}
           transition={{ delay, duration: 1.1, ease: [0.6, 0.05, 0.2, 1] }}
         >
           <div className="rounded-2xl border border-white/15 p-4">

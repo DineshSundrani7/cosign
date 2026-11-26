@@ -29,7 +29,7 @@ export const FAQ: { q: string; a: string; keys: string[]; hidden?: boolean }[] =
   {
     q: "How does it work technically?",
     a: "Agents register and sign every request. Cosign's gateway checks the agent, the policy engine applies your limits, and amber or red requests reach your phone, where your PIN unlocks a key that signs that exact request. The agent gets a single-use approval token, and the bank or rail refuses to execute without it. It builds on Google's AP2 mandates, OpenID CIBA, UPI mandates and DPDP consent managers.",
-    keys: ["technical", "technically", "architecture", "pipeline", "infrastructure", "backend", "token", "api", "protocol", "ap2", "ciba", "enforce", "under the hood", "integrate"],
+    keys: ["how does it work technically", "work technically", "technical", "technically", "architecture", "pipeline", "infrastructure", "backend", "token", "api", "protocol", "ap2", "ciba", "enforce", "under the hood", "integrate"],
   },
   {
     q: "Is this just a frontend?",
@@ -69,12 +69,12 @@ export const FAQ: { q: string; a: string; keys: string[]; hidden?: boolean }[] =
   {
     q: "Can my family use it?",
     a: "Yes — families are the first audience. With a Family plan, an elder's or teen's agent can't go above their limit, pay a new payee or share their data without a trusted family member's cosign. The parent agrees and keeps their own phone. UPI Circle already does part of this for UPI payments; Cosign extends it to AI agents, every app, data sharing and contracts.",
-    keys: ["family", "parent", "mother", "father", "elder", "teen", "child", "kid", "circle", "grandparent"],
+    keys: ["help families", "useful for families", "family", "families", "parent", "parents", "mother", "father", "elder", "teen", "child", "kid", "circle", "grandparent"],
   },
   {
     q: "What does it cost?",
     a: "The proposal: the connector is free; families pay for a Family plan first. Next, banks and UPI apps pay per protected customer, and agent companies pay for know-your-agent registration. Later, merchants pay for verified orders and insurers share premiums on a cosign guarantee. Selling people's data is off the table.",
-    keys: ["cost", "price", "pricing", "free", "fee", "charge", "business model", "revenue", "monetize", "monetise", "how much", "subscription"],
+    keys: ["make money", "earn", "revenue model", "cost", "price", "pricing", "free", "fee", "charge", "business model", "revenue", "monetize", "monetise", "how much", "subscription"],
   },
   {
     q: "How do I try the demo?",

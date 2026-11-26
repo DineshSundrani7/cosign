@@ -97,7 +97,7 @@ function Band({ id, label, title, kicker, children, tone = "plain" }: { id: stri
     <section id={id} className={`${toneCls} px-5 py-20 md:py-24`}>
       <div className="mx-auto max-w-[1240px]">
         <Reveal>
-          <p className={`text-sm font-semibold ${tone === "ink" ? "text-[#e8c766]" : "text-brand"}`}>{label}</p>
+          <p className={`text-sm font-semibold ${tone === "ink" ? "text-[#e8c766]" : "text-gold"}`}>{label}</p>
           <h2 className="mt-2 max-w-3xl text-[32px] font-semibold leading-[1.08] md:text-[46px]">{title}</h2>
           {kicker && <p className={`mt-4 max-w-2xl text-[17px] ${tone === "ink" ? "opacity-80" : "text-muted-foreground"}`}>{kicker}</p>}
         </Reveal>
@@ -549,7 +549,7 @@ export function About() {
   return (
     <Band id="about" label="About" title="A DNS Labs concept, built by Dinesh Sundrani" tone="ink">
       <div className="grid gap-10 md:grid-cols-[auto_1fr]">
-        <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-[#9cc3e8] font-display text-4xl font-semibold text-ink">DS</div>
+        <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-[#e8c766] font-display text-4xl font-semibold text-ink">DS</div>
         <div className="max-w-3xl space-y-4 text-[17px] leading-relaxed">
           <p>Cosign started from one question: when everyone has an AI agent acting for them, who makes sure a person still decides the things that can't be undone?</p>
           <p className="opacity-80">Dinesh Sundrani is an MS Entrepreneurship student at IIT Madras with a B.Tech in Electrical Engineering. He has worked in the Founder's Office at Exira, a financing platform for manufacturing MSMEs, and on the business side of Kriya Neuro Technologies, a neurotech startup from IIT Madras's Brain Lab — work that sits where hardware, money and trust meet.</p>

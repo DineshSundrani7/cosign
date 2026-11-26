@@ -593,7 +593,7 @@ export function Demo() {
     <section id="demo" className="bg-secondary px-5 py-20 md:py-24">
       <div className="mx-auto max-w-[1240px]">
         <div className="mb-10">
-          <p className="text-sm font-semibold text-brand">Live prototype</p>
+          <p className="text-sm font-semibold text-gold">Live prototype</p>
           <h2 className="mt-2 max-w-3xl text-[32px] font-semibold leading-[1.08] md:text-[46px]">Try it: seven moments from Kavya's week</h2>
           <p className="mt-4 max-w-2xl text-[17px] text-muted-foreground">Pick a moment. A notification lands on Kavya's phone — tap it to see what Cosign does.</p>
         </div>
