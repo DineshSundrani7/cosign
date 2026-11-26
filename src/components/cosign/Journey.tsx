@@ -43,26 +43,26 @@ export function Journey() {
   const now = STOPS[active];
 
   return (
-    <section id="journey" className="relative overflow-hidden bg-mint-soft px-5 py-20 md:py-24">
-      <div className="pointer-events-none absolute -left-40 top-20 h-[520px] w-[520px] rounded-full bg-mint/15 blur-3xl" aria-hidden />
+    <section id="journey" className="relative overflow-hidden bg-sky-soft px-5 py-20 md:py-24">
+      <div className="pointer-events-none absolute -left-40 top-20 h-[520px] w-[520px] rounded-full bg-sky/15 blur-3xl" aria-hidden />
       <div className="pointer-events-none absolute -right-40 bottom-10 h-[420px] w-[420px] rounded-full bg-brand/10 blur-3xl" aria-hidden />
       <div className="relative mx-auto grid max-w-[1240px] gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <p className="text-sm font-semibold text-mint">The journey</p>
+          <p className="text-sm font-semibold text-sky">The journey</p>
           <h2 className="mt-2 text-[32px] font-semibold leading-[1.08] md:text-[46px]">From a PIN for money to a cosign for everything</h2>
           <p className="mt-4 max-w-md text-[17px] text-muted-foreground">Scroll to travel from 2010 to 2040. Each step made it easier for software to act for us — and raised the question of who decides.</p>
-          <div className="mt-8 hidden rounded-3xl border border-mint/30 bg-background/70 p-6 backdrop-blur lg:block" aria-hidden>
-            <p className="font-display text-7xl font-semibold tabular-nums text-mint">{year}</p>
+          <div className="mt-8 hidden rounded-3xl border border-sky/30 bg-background/70 p-6 backdrop-blur lg:block" aria-hidden>
+            <p className="font-display text-7xl font-semibold tabular-nums text-sky">{year}</p>
             <p className="mt-2 text-lg font-semibold">{now.title}</p>
-            <p className={`mt-1 text-sm font-semibold ${now.future ? "text-mint" : "text-muted-foreground"}`}>{now.future ? "The Cosign scenario" : "What happened"}</p>
+            <p className={`mt-1 text-sm font-semibold ${now.future ? "text-sky" : "text-muted-foreground"}`}>{now.future ? "The Cosign scenario" : "What happened"}</p>
           </div>
         </div>
 
         <div ref={ref} className="relative pl-12">
-          <div className="absolute bottom-2 left-[15px] top-2 w-[3px] rounded-full bg-mint/20" aria-hidden>
-            <motion.div className="w-full rounded-full bg-gradient-to-b from-brand via-mint to-seal" style={{ height: fill }} />
+          <div className="absolute bottom-2 left-[15px] top-2 w-[3px] rounded-full bg-sky/20" aria-hidden>
+            <motion.div className="w-full rounded-full bg-gradient-to-b from-brand via-sky to-seal" style={{ height: fill }} />
             <motion.div className="absolute left-1/2" style={{ top }}>
-              <span className="absolute -left-[13px] -top-[13px] block h-[26px] w-[26px] rounded-full bg-mint shadow-[0_0_0_7px_rgba(20,160,145,0.18),0_0_32px_8px_rgba(20,160,145,0.45)]" />
+              <span className="absolute -left-[13px] -top-[13px] block h-[26px] w-[26px] rounded-full bg-sky shadow-[0_0_0_7px_rgba(31,111,191,0.18),0_0_32px_8px_rgba(31,111,191,0.45)]" />
               <span className="absolute -left-[5px] -top-[5px] block h-[10px] w-[10px] rounded-full bg-white" />
             </motion.div>
           </div>
@@ -71,12 +71,12 @@ export function Journey() {
               const on = i <= active;
               return (
                 <li key={s.year} ref={(el) => { items.current[i] = el; }} className="relative">
-                  <span className={`absolute -left-[42px] top-2 h-3 w-3 rounded-full border-2 transition-colors duration-300 ${on ? (s.future ? "border-mint bg-mint" : "border-brand bg-brand") : "border-mint/40 bg-background"}`} aria-hidden />
-                  <div className={`rounded-2xl border p-5 transition-all duration-500 ${i === active ? "border-mint bg-background shadow-[0_18px_40px_-20px_rgba(20,160,145,0.55)]" : on ? "border-border bg-background/80" : "border-transparent bg-background/40 opacity-60"}`}>
+                  <span className={`absolute -left-[42px] top-2 h-3 w-3 rounded-full border-2 transition-colors duration-300 ${on ? (s.future ? "border-sky bg-sky" : "border-brand bg-brand") : "border-sky/40 bg-background"}`} aria-hidden />
+                  <div className={`rounded-2xl border p-5 transition-all duration-500 ${i === active ? "border-sky bg-background shadow-[0_18px_40px_-20px_rgba(31,111,191,0.55)]" : on ? "border-border bg-background/80" : "border-transparent bg-background/40 opacity-60"}`}>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-display text-2xl font-semibold tabular-nums">{s.year}</span>
-                      {s.cosign && <span className="rounded-full bg-mint px-2 py-0.5 text-xs font-bold text-white">Cosign</span>}
-                      {s.future && !s.cosign && <span className="rounded-full bg-mint-soft px-2 py-0.5 text-xs font-bold text-mint">Scenario</span>}
+                      {s.cosign && <span className="rounded-full bg-sky px-2 py-0.5 text-xs font-bold text-white">Cosign</span>}
+                      {s.future && !s.cosign && <span className="rounded-full bg-sky-soft px-2 py-0.5 text-xs font-bold text-sky">Scenario</span>}
                     </div>
                     <h3 className="mt-1 text-xl font-semibold">{s.title}</h3>
                     <p className="mt-1 text-muted-foreground">{s.text}</p>

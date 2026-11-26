@@ -6,7 +6,7 @@ function Head({ id, label, title, kicker, dark = false, children }: { id: string
     <section id={id} className={`px-5 py-20 md:py-24 ${dark ? "bg-ink text-primary-foreground" : ""}`}>
       <div className="mx-auto max-w-[1240px]">
         <Reveal>
-          <p className={`text-sm font-semibold ${dark ? "text-[#8fe0d4]" : "text-mint"}`}>{label}</p>
+          <p className={`text-sm font-semibold ${dark ? "text-[#9cc3e8]" : "text-sky"}`}>{label}</p>
           <h2 className="mt-2 max-w-3xl text-[32px] font-semibold leading-[1.08] md:text-[46px]">{title}</h2>
           {kicker && <p className={`mt-4 max-w-2xl text-[17px] ${dark ? "opacity-80" : "text-muted-foreground"}`}>{kicker}</p>}
         </Reveal>
@@ -28,7 +28,7 @@ const PIPE: { who: string; step: string; detail: string; tone: "agent" | "cosign
 ];
 const toneCls = {
   agent: "bg-secondary text-ink",
-  cosign: "bg-mint text-white",
+  cosign: "bg-sky text-white",
   you: "bg-brand text-white",
   rail: "bg-ink text-primary-foreground",
 };
@@ -44,10 +44,10 @@ export function UnderTheHood() {
     <Head id="tech" label="Under the hood" title="Cosign doesn't watch agents. Agents must bring it a signed yes." kicker="The same reason UPI works: the bank won't move money without your PIN. Cosign doesn't invent a new protocol — it is the person's decision layer on top of standards that already exist.">
       <div className="grid gap-10 lg:grid-cols-[1.25fr_0.75fr]">
         <ol className="relative space-y-3">
-          <span className="absolute bottom-6 left-[27px] top-6 w-px bg-mint/40" aria-hidden />
+          <span className="absolute bottom-6 left-[27px] top-6 w-px bg-sky/40" aria-hidden />
           {PIPE.map((p, i) => (
             <li key={p.step} className="relative flex gap-4">
-              <span className="z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-mint/40 bg-background font-display text-xl font-semibold text-mint">{i + 1}</span>
+              <span className="z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-sky/40 bg-background font-display text-xl font-semibold text-sky">{i + 1}</span>
               <div className="flex-1 rounded-2xl border border-border p-4">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${toneCls[p.tone]}`}>{p.who}</span>
@@ -59,7 +59,7 @@ export function UnderTheHood() {
           ))}
         </ol>
         <div className="space-y-4">
-          <div className="rounded-2xl bg-mint-soft p-6">
+          <div className="rounded-2xl bg-sky-soft p-6">
             <p className="font-display text-xl font-semibold">Set up once</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li><span className="font-semibold">Agents register</span> and get a verified identity and signing key.</li>
@@ -76,7 +76,7 @@ export function UnderTheHood() {
             </dl>
           </div>
           <p className="rounded-2xl bg-amber-soft p-4 text-sm"><span className="font-semibold">The honest gap:</span> step 6 only works where the executor demands the token. That's why Cosign launches inside banks and UPI apps — they hold the money, so they can enforce it from day one.</p>
-          <p className="rounded-2xl border border-mint/40 bg-mint-soft p-4 text-sm"><span className="font-semibold">Working v0:</span> steps 1–7 run in code, with signatures, tokens, a mock bank and tests. See the <code>server/</code> folder in the project's code.</p>
+          <p className="rounded-2xl border border-sky/40 bg-sky-soft p-4 text-sm"><span className="font-semibold">Working v0:</span> steps 1–7 run in code, with signatures, tokens, a mock bank and tests. See the <code>server/</code> folder in the project's code.</p>
         </div>
       </div>
     </Head>
@@ -99,7 +99,7 @@ export function BuildLog() {
       <ol className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {log.map(([t, d], i) => (
           <li key={t} className="rounded-2xl border border-border p-6">
-            <p className="font-display text-3xl font-semibold text-mint">{i + 1}</p>
+            <p className="font-display text-3xl font-semibold text-sky">{i + 1}</p>
             <p className="mt-2 text-lg font-semibold">{t}</p>
             <p className="mt-2 text-sm text-muted-foreground">{d}</p>
           </li>

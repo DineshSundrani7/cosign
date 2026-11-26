@@ -162,13 +162,13 @@ export function Hero() {
   return (
     <section id="top" className="relative overflow-hidden px-5 pb-16 pt-12 md:pt-20">
       <div className="pointer-events-none absolute inset-0 rule-paper opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent_75%)]" aria-hidden />
-      <div className="pointer-events-none absolute -top-24 right-[-120px] h-[560px] w-[560px] rounded-full bg-mint/15 blur-3xl drift" aria-hidden />
-      <div className="pointer-events-none absolute bottom-0 left-[-160px] h-[380px] w-[380px] rounded-full bg-mint/10 blur-3xl drift [animation-delay:-7s]" aria-hidden />
+      <div className="pointer-events-none absolute -top-24 right-[-120px] h-[560px] w-[560px] rounded-full bg-sky/15 blur-3xl drift" aria-hidden />
+      <div className="pointer-events-none absolute bottom-0 left-[-160px] h-[380px] w-[380px] rounded-full bg-sky/10 blur-3xl drift [animation-delay:-7s]" aria-hidden />
       <div className="relative mx-auto grid max-w-[1240px] items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
-          <p className="text-sm text-muted-foreground"><span className="inline-flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-mint" aria-hidden />A DNS Labs concept · working prototype · in development</span></p>
+          <p className="text-sm text-muted-foreground"><span className="inline-flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-sky" aria-hidden />A DNS Labs concept · working prototype · in development</span></p>
           <h1 className="mt-5 text-[44px] font-semibold leading-[1.02] md:text-[64px]">
-            Your agent proposes.<br /><span className="bg-gradient-to-r from-brand to-mint bg-clip-text text-transparent">You cosign.</span>
+            Your agent proposes.<br /><span className="bg-gradient-to-r from-brand to-[#4a9be0] bg-clip-text text-transparent">You cosign.</span>
           </h1>
           <p className="mt-6 max-w-[34rem] text-[17px] leading-relaxed text-muted-foreground">
             India's payment rails are learning to let AI agents spend small amounts without asking. Cosign is the one place where everything an agent can't take back waits for your second signature: money above your limits, your personal data, and your name on a contract.
@@ -488,7 +488,7 @@ export function GoToMarket() {
         <p className="text-[17px] leading-relaxed">
           People don't install safety apps until something goes wrong, and agents won't route to a stranger's service. But a bank holds the money — so it can <strong>refuse to release a payment above your limits without a cosign</strong>. That gives Cosign enforcement from day one, and the bank gets a trust feature it can market.
         </p>
-        <div className="rounded-2xl bg-mint p-6 text-white">
+        <div className="rounded-2xl bg-sky p-6 text-white">
           <p className="text-sm opacity-80">First use case</p>
           <p className="mt-1 font-display text-2xl font-semibold leading-snug">“Your parents' agents can't spend above ₹1,000 without you.”</p>
           <p className="mt-2 text-sm opacity-85">A clear payer, the adult child, and a clear fear: fraud aimed at elders.</p>
@@ -497,7 +497,7 @@ export function GoToMarket() {
       <ol className="mt-12 grid gap-0 md:grid-cols-3">
         {road.map(([y, t, d], i) => (
           <li key={y} className="relative border-t-4 border-ink pr-6 pt-6">
-            <span className={`absolute -top-[10px] left-0 h-4 w-4 rounded-full ${i === 0 ? "bg-mint" : "bg-ink"}`} />
+            <span className={`absolute -top-[10px] left-0 h-4 w-4 rounded-full ${i === 0 ? "bg-sky" : "bg-ink"}`} />
             <p className="font-display text-3xl font-semibold">{y}</p>
             <p className="mt-1 font-semibold">{t}</p>
             <p className="mt-1 pb-6 text-sm text-muted-foreground">{d}</p>
