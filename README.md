@@ -4,7 +4,7 @@
 
 A product I'm building at **DNS Labs** — Dinesh Sundrani. Status: **concept, clickable prototype and a working v0 backend · in development.**
 
-**Live site:** add your Vercel link here
+**Live site:** **https://cosign-navy.vercel.app**
 
 By 2040, personal AI agents pay, sign and share for us. India's payment rails (UPI mandates, Reserve Pay, NPCI's agent protocol) are learning to let agents spend small amounts without asking. **Cosign is the one place where everything an agent can't take back waits for your second signature**: money above your limits, your personal data, and your name on a contract.
 
@@ -59,7 +59,7 @@ All people, agents and sellers in the demo are fictional.
 
 GitHub Pages also works: Settings → Pages → deploy from branch `main`, folder `/docs`.
 
-After deploying, change `og:image` in `index.html` to the full address (for example `https://your-app.vercel.app/og.png`) so WhatsApp and LinkedIn show the preview card, then rebuild.
+`og:image` in `index.html` uses the full address (`https://cosign-navy.vercel.app/og.png`) so WhatsApp and LinkedIn show the preview card. Change it if you deploy under another address.
 
 ## The Ask Cosign chat
 
