@@ -13,6 +13,9 @@ A product I'm building at **DNS Labs** — Dinesh Sundrani. Status: **concept, c
 
 **Live site:** **https://cosign-navy.vercel.app**
 
+> [!NOTE]
+> The site is hosted on Vercel's free plan. The first visit can take a few seconds to load, especially on a slow connection, because the demos and the in-browser engine load up front. Please give it a moment.
+
 By 2040, personal AI agents pay, sign and share for us. India's payment rails (UPI mandates, Reserve Pay, NPCI's agent protocol) are learning to let agents spend small amounts without asking. **Cosign is the one place where everything an agent can't take back waits for your second signature**: money above your limits, your personal data, and your name on a contract.
 
 ![Cosign website hero](assets/screenshot.png)
