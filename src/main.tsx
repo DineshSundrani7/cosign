@@ -13,6 +13,10 @@ function Index() {
   return (
     <>
       <a href="#demo" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-card focus:p-2">Skip to demo</a>
+      <div role="note" className="bg-[#fbf0c9] px-4 py-2.5 text-center text-[13px] leading-snug text-ink sm:text-sm">
+        <span className="mr-2 rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#e8c766]">Early prototype</span>
+        <strong>Not a launched product.</strong> Built part-time alongside my college studies to test the idea. Users, banks and money are simulated.
+      </div>
       <Nav />
       <main>
         <Hero />
