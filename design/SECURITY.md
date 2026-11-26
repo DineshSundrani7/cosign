@@ -23,5 +23,8 @@ v0 is a prototype. "Covered" means there is working code and a test for it in `s
 | Phishing approval page | A fake Cosign page steals the PIN | Real approvals happen inside the bank's or Cosign's own app, never via a link | Planned |
 | SIM swap / account takeover | Move someone's Cosign to a new phone | Device re-binding needs bank-grade KYC and a cooling-off period | Planned |
 | Agent skips Cosign | The agent pays directly | The bank refuses agent payments without a token — enforcement lives with whoever holds the money | Covered in the mock bank |
+| Over-sharing data | Approved "blood reports" but the agent asks for the full history, or sends it to someone else | The data holder releases only the fields and recipient named in the token, once | Covered in the mock hospital |
+| Contract swap | Approved a contract with one company, signs with another | The e-sign desk checks the counterparty and action in the token | Covered in the mock e-sign desk |
+| Malformed or oversized input | Crash or confuse the engine | Every request body is schema-validated before it reaches the engine | Covered |
 
 Known v0 limits: a single SQLite file rather than a replicated database, a software key standing in for a phone's secure chip, an `/agents` endpoint that generates agent keys server-side (protected by an admin token), no TLS of its own, and an approval link instead of in-app push. None of these are production choices.

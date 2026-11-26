@@ -92,7 +92,7 @@ export function BuildLog() {
     ["Built a working prototype", "This website's phone demo, chat assistant, read-aloud and 2010–2040 journey — written in React with AI pair-programming."],
     ["Built the core backend (v0)", "Real signed agent requests, a policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, Family Circle approvals, seller-claim checks, 48-hour undo, a hash-chained receipt log, SQLite persistence and an MCP connector so a real AI assistant must ask first. The bank and money are simulated."],
     ["Made it clickable", "A browser port of the engine on this page: real keys, signatures, PIN lock and bank checks running on the visitor's own device, so anyone can try the attacks."],
-    ["Tested it", "17 automated backend tests (forgery, tampering, replay, flooding, expired tokens, Family Circle, seller claims, undo, edited receipts, restarts), every demo scenario clicked through on desktop and phone sizes, and an automated WCAG 2.1 AA check with no violations."],
+    ["Tested it", "21 automated backend tests (forgery, tampering, replay, flooding, expired tokens, Family Circle, seller claims, undo, edited receipts, restarts, data released only as approved, bad input), every demo scenario clicked through on desktop and phone sizes, and an automated WCAG 2.1 AA check with no violations."],
     ["What's next", "Five interviews with families managing a parent's finances, one conversation with a bank's digital team, and a pilot measuring regret rate and fraud stopped."],
   ];
   return (

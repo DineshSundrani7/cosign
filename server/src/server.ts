@@ -17,13 +17,21 @@
  *   POST /requests/:id/dispute {reason}   receipt chain returned as evidence
  *   GET/POST /users/:address/mandates     list or add limits; POST /users/:address/mandates/:id {state}
  *   POST /bank/refund {txnId}
+ *   POST /data/release   mock hospital / consent manager — releases data only with a valid cosign token
+ *   POST /contracts/sign mock e-sign desk — signs only with a valid cosign token
+ *   GET  /metrics?user=  regret rate, asks per week, time to decide, attacks blocked
+ *   GET  /openapi.yaml   API description
  *
  * Demo users: kavya@cosign (PIN 1234, groceries ≤ ₹3,000) and her mother sunanda@cosign
  * (solo limit ₹1,000; anything bigger goes to Kavya through the Family Circle).
  */
+import { readFileSync } from "node:fs";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { MockBank } from "./bank.js";
 import { CosignService, describe } from "./cosign.js";
+import { MockContractDesk, MockDataHolder } from "./executors.js";
+import { computeMetrics } from "./metrics.js";
+import { AgentSchema, ApproveSchema, DisputeSchema, MandateSchema, MandateStateSchema, PaySchema, ReleaseSchema, SignContractSchema, SignedRequestSchema, parse } from "./schemas.js";
 import { SqliteStore } from "./store.js";
 
 function seed(cosign: CosignService) {
@@ -55,6 +63,8 @@ export function createApp(opts: { dbPath?: string; adminToken?: string } = {}) {
   }
   const bank = new MockBank(() => cosign.publicKeys());
   if (saved?.bank) bank.restore(saved.bank as ReturnType<MockBank["snapshot"]>);
+  const hospital = new MockDataHolder("CityCare Hospital", () => cosign.publicKeys());
+  const esign = new MockContractDesk(() => cosign.publicKeys());
   const persist = () => store?.save(cosign.snapshot(), bank.snapshot(), cosign.receipts.entries);
   persist();
 
@@ -79,10 +89,10 @@ export function createApp(opts: { dbPath?: string; adminToken?: string } = {}) {
       if (req.method === "GET" && url.pathname === "/.well-known/cosign-keys") return send(res, 200, cosign.publicKeys());
       if (req.method === "POST" && url.pathname === "/agents") {
         if (opts.adminToken && req.headers.authorization !== `Bearer ${opts.adminToken}`) return send(res, 401, { error: "Registering agents needs the admin token" });
-        const { name, user } = await readJson(req);
-        return send(res, 201, cosign.registerAgent(String(name ?? "Agent"), String(user ?? "kavya@cosign")));
+        const { name, user } = parse(AgentSchema, await readJson(req));
+        return send(res, 201, cosign.registerAgent(name, user));
       }
-      if (req.method === "POST" && url.pathname === "/requests") return send(res, 200, cosign.submit(await readJson(req)));
+      if (req.method === "POST" && url.pathname === "/requests") return send(res, 200, cosign.submit(parse(SignedRequestSchema, await readJson(req))));
       if (parts[0] === "requests" && parts[1]) {
         const id = parts[1];
         if (req.method === "GET" && parts[2] === "wait") {
@@ -97,12 +107,12 @@ export function createApp(opts: { dbPath?: string; adminToken?: string } = {}) {
           return r ? send(res, 200, r) : send(res, 404, { error: "Unknown request" });
         }
         if (req.method === "POST" && parts[2] === "approve") {
-          const { pin, numberMatch } = await readJson(req);
-          return send(res, 200, cosign.approve(id, String(pin ?? ""), { numberMatch: numberMatch ? String(numberMatch) : undefined }));
+          const { pin, numberMatch } = parse(ApproveSchema, await readJson(req));
+          return send(res, 200, cosign.approve(id, pin, { numberMatch }));
         }
         if (req.method === "POST" && parts[2] === "decline") return send(res, 200, cosign.decline(id));
         if (req.method === "POST" && parts[2] === "undo") return send(res, 200, cosign.undo(id));
-        if (req.method === "POST" && parts[2] === "dispute") { const { reason } = await readJson(req); return send(res, 200, cosign.dispute(id, String(reason ?? "No reason given"))); }
+        if (req.method === "POST" && parts[2] === "dispute") { const { reason } = parse(DisputeSchema, await readJson(req)); return send(res, 200, cosign.dispute(id, reason)); }
       }
       if (req.method === "GET" && parts[0] === "approve" && parts[1]) {
         const r = cosign.get(parts[1]);
@@ -111,10 +121,14 @@ export function createApp(opts: { dbPath?: string; adminToken?: string } = {}) {
       if (parts[0] === "users" && parts[1] && parts[2] === "mandates") {
         const user = decodeURIComponent(parts[1]);
         if (req.method === "GET" && parts.length === 3) return send(res, 200, cosign.mandates(user));
-        if (req.method === "POST" && parts.length === 3) { cosign.addMandate(user, await readJson(req)); return send(res, 201, cosign.mandates(user)); }
-        if (req.method === "POST" && parts[3]) { const { state } = await readJson(req); cosign.setMandateState(user, parts[3], state); return send(res, 200, cosign.mandates(user)); }
+        if (req.method === "POST" && parts.length === 3) { cosign.addMandate(user, parse(MandateSchema, await readJson(req))); return send(res, 201, cosign.mandates(user)); }
+        if (req.method === "POST" && parts[3]) { const { state } = parse(MandateStateSchema, await readJson(req)); cosign.setMandateState(user, parts[3], state); return send(res, 200, cosign.mandates(user)); }
       }
-      if (req.method === "POST" && url.pathname === "/bank/pay") return send(res, 200, bank.pay(await readJson(req)));
+      if (req.method === "POST" && url.pathname === "/bank/pay") return send(res, 200, bank.pay(parse(PaySchema, await readJson(req))));
+      if (req.method === "POST" && url.pathname === "/data/release") return send(res, 200, hospital.release(parse(ReleaseSchema, await readJson(req))));
+      if (req.method === "POST" && url.pathname === "/contracts/sign") return send(res, 200, esign.sign(parse(SignContractSchema, await readJson(req))));
+      if (req.method === "GET" && url.pathname === "/metrics") return send(res, 200, computeMetrics(cosign.receipts.entries, Date.now(), url.searchParams.get("user") ?? undefined));
+      if (req.method === "GET" && url.pathname === "/openapi.yaml") return send(res, 200, readFileSync(new URL("../../design/openapi.yaml", import.meta.url), "utf8"), "text/yaml; charset=utf-8");
       if (req.method === "POST" && url.pathname === "/bank/refund") { const { txnId } = await readJson(req); return send(res, 200, bank.refund(String(txnId))); }
       if (req.method === "GET" && url.pathname === "/receipts") return send(res, 200, { chain: cosign.receipts.verify(), entries: cosign.receipts.entries });
       return send(res, 404, { error: "Not found" });

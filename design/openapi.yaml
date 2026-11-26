@@ -1,0 +1,244 @@
+openapi: 3.1.0
+info:
+  title: Cosign API (v0)
+  version: 0.1.0
+  description: |
+    The person's decision layer for AI agents. Agents send signed requests to pay, share data or sign
+    contracts. Cosign rates each one (green / amber / red), asks the person when needed, and issues a
+    single-use, 5-minute token that the bank, data holder or e-sign desk verifies offline.
+    This is a working prototype. The bank, hospital and e-sign desk are mocks.
+servers:
+  - url: http://localhost:8787
+tags:
+  - name: Agents
+  - name: Requests
+  - name: Mandates
+  - name: Executors
+    description: Mock parties that act only with a valid Cosign token
+  - name: Audit
+paths:
+  /health:
+    get: { summary: Liveness check, responses: { "200": { description: OK } } }
+  /.well-known/cosign-keys:
+    get:
+      tags: [Audit]
+      summary: Public keys (issuer, user devices) and the revoked-token list, for offline verification
+      responses: { "200": { description: Keys } }
+  /agents:
+    post:
+      tags: [Agents]
+      summary: Register an agent for a user (needs the admin token when COSIGN_ADMIN_TOKEN is set)
+      security: [{ admin: [] }, {}]
+      requestBody:
+        content: { application/json: { schema: { $ref: "#/components/schemas/NewAgent" } } }
+      responses:
+        "201": { description: "Agent id and its private key (shown once)" }
+        "401": { description: Missing or wrong admin token }
+  /requests:
+    post:
+      tags: [Requests]
+      summary: Submit a signed request
+      requestBody:
+        content: { application/json: { schema: { $ref: "#/components/schemas/SignedRequest" } } }
+      responses:
+        "200": { description: "Decision — approved (green, with token), pending (amber/red) or blocked", content: { application/json: { schema: { $ref: "#/components/schemas/Decision" } } } }
+        "400": { $ref: "#/components/responses/Error" }
+  /requests/{id}:
+    get:
+      tags: [Requests]
+      summary: Current status of a request
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses: { "200": { description: Decision }, "404": { description: Unknown request } }
+  /requests/{id}/wait:
+    get:
+      tags: [Requests]
+      summary: Long-poll until the person decides (or the timeout passes)
+      parameters:
+        - { $ref: "#/components/parameters/Id" }
+        - { name: timeout, in: query, schema: { type: integer, maximum: 60, default: 25 }, description: Seconds }
+      responses: { "200": { description: Decision } }
+  /requests/{id}/approve:
+    post:
+      tags: [Requests]
+      summary: Approve with the person's PIN (red tier also needs the number shown on the agent's screen)
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pin]
+              properties:
+                pin: { type: string, pattern: "^\\d{4}$" }
+                numberMatch: { type: string, pattern: "^\\d{2}$" }
+      responses: { "200": { description: Approved, with token }, "400": { $ref: "#/components/responses/Error" } }
+  /requests/{id}/decline:
+    post: { tags: [Requests], summary: Decline, parameters: [{ $ref: "#/components/parameters/Id" }], responses: { "200": { description: Declined } } }
+  /requests/{id}/undo:
+    post:
+      tags: [Requests]
+      summary: Undo an auto-approved (green) action within 48 hours; revokes its token
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses: { "200": { description: Undone } }
+  /requests/{id}/dispute:
+    post:
+      tags: [Requests]
+      summary: Raise a dispute; returns the signed request, decision and receipt-chain evidence
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        content: { application/json: { schema: { type: object, required: [reason], properties: { reason: { type: string, maxLength: 300 } } } } }
+      responses: { "200": { description: Evidence pack } }
+  /approve/{id}:
+    get:
+      tags: [Requests]
+      summary: Phone-friendly approval page (HTML)
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses: { "200": { description: HTML page } }
+  /users/{address}/mandates:
+    get:
+      tags: [Mandates]
+      summary: List standing permissions
+      parameters: [{ $ref: "#/components/parameters/Address" }]
+      responses: { "200": { description: Mandates } }
+    post:
+      tags: [Mandates]
+      summary: Add a standing permission (e.g. groceries up to ₹3,000)
+      parameters: [{ $ref: "#/components/parameters/Address" }]
+      requestBody:
+        content: { application/json: { schema: { $ref: "#/components/schemas/Mandate" } } }
+      responses: { "201": { description: Mandates } }
+  /users/{address}/mandates/{mandateId}:
+    post:
+      tags: [Mandates]
+      summary: Pause, resume or revoke a mandate
+      parameters:
+        - { $ref: "#/components/parameters/Address" }
+        - { name: mandateId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content: { application/json: { schema: { type: object, required: [state], properties: { state: { enum: [active, paused, revoked] } } } } }
+      responses: { "200": { description: Mandates } }
+  /bank/pay:
+    post:
+      tags: [Executors]
+      summary: Mock bank — pays only with a valid token for this exact payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [from, to, amount, agentId]
+              properties: { from: { type: string }, to: { type: string }, amount: { type: number }, agentId: { type: string }, token: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ExecResult" } }
+  /bank/refund:
+    post: { tags: [Executors], summary: Mock bank refund (used by undo), responses: { "200": { $ref: "#/components/responses/ExecResult" } } }
+  /data/release:
+    post:
+      tags: [Executors]
+      summary: Mock hospital / consent manager — releases only the approved fields, to the approved recipient, once
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subject, recipient, fields, agentId]
+              properties: { subject: { type: string }, recipient: { type: string }, fields: { type: array, items: { type: string } }, agentId: { type: string }, token: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ExecResult" } }
+  /contracts/sign:
+    post:
+      tags: [Executors]
+      summary: Mock e-sign desk — signs only with a contract token for that counterparty
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [party, counterparty, agentId]
+              properties: { party: { type: string }, counterparty: { type: string }, agentId: { type: string }, token: { type: string } }
+      responses: { "200": { $ref: "#/components/responses/ExecResult" } }
+  /metrics:
+    get:
+      tags: [Audit]
+      summary: Product metrics computed from the receipt log
+      parameters: [{ name: user, in: query, schema: { type: string } }]
+      responses:
+        "200":
+          description: Metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  decisions: { type: integer }
+                  autoApproved: { type: integer }
+                  asksPerWeek: { type: number }
+                  medianDecisionSeconds: { type: number }
+                  regretRate: { type: number, description: "% of approved actions later undone or disputed" }
+                  attacksBlocked: { type: integer }
+                  protectedActionRate: { type: number }
+  /receipts:
+    get:
+      tags: [Audit]
+      summary: Hash-chained receipt log and whether the chain verifies
+      responses: { "200": { description: Receipts } }
+  /openapi.yaml:
+    get: { summary: This document, responses: { "200": { description: YAML } } }
+components:
+  securitySchemes:
+    admin: { type: http, scheme: bearer }
+  parameters:
+    Id: { name: id, in: path, required: true, schema: { type: string } }
+    Address: { name: address, in: path, required: true, schema: { type: string, example: kavya@cosign } }
+  responses:
+    Error:
+      description: Invalid input or refused action
+      content: { application/json: { schema: { type: object, properties: { error: { type: string } } } } }
+    ExecResult:
+      description: "{ ok: true, ref, decidedBy } or { ok: false, reason }"
+  schemas:
+    NewAgent:
+      type: object
+      required: [name, user]
+      properties: { name: { type: string }, user: { type: string, example: kavya@cosign } }
+    SignedRequest:
+      type: object
+      required: [body, signature]
+      properties:
+        signature: { type: string, description: "Ed25519 signature (base64url) over the canonical JSON of body, by the agent's key" }
+        body:
+          type: object
+          required: [agentId, user, action, purpose, reversible, nonce, issuedAt]
+          properties:
+            agentId: { type: string }
+            user: { type: string, pattern: "^[a-z0-9._-]{2,40}@cosign$" }
+            action: { enum: [payment, data_share, contract] }
+            purpose: { type: string }
+            reversible: { type: boolean }
+            amount: { type: number, description: Rupees; required for payments }
+            payee: { type: string, description: Required for payments }
+            category: { type: string }
+            data: { type: array, items: { type: string }, description: Fields to share (data_share) }
+            recipient: { type: string, description: Required for data_share and contract }
+            sellerClaims:
+              type: array
+              items: { type: object, properties: { claim: { type: string }, kind: { const: stock }, value: { type: number } } }
+            nonce: { type: string }
+            issuedAt: { type: integer, description: Epoch ms; must be within 2 minutes }
+    Mandate:
+      type: object
+      required: [id, category, maxPerAction, maxPerMonth, expiresAt]
+      properties:
+        id: { type: string }
+        category: { type: string, description: 'Category, or "*" for any' }
+        maxPerAction: { type: number }
+        maxPerMonth: { type: number }
+        expiresAt: { type: integer }
+        payees: { type: array, items: { type: string } }
+    Decision:
+      type: object
+      properties:
+        requestId: { type: string }
+        status: { enum: [approved, pending, declined, blocked, undone] }
+        tier: { enum: [green, amber, red, blocked] }
+        reasons: { type: array, items: { type: string } }
+        token: { type: string, description: "Single-use, 5-minute EdDSA token (green or after approval)" }
+        numberMatch: { type: string, description: Red tier — shown on the agent's screen }

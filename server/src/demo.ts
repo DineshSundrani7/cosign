@@ -7,6 +7,7 @@ import { AgentClient } from "./agent.js";
 import { MockBank } from "./bank.js";
 import { CosignService } from "./cosign.js";
 import { b64u, fromB64u, newKeyPair } from "./crypto.js";
+import { MockDataHolder } from "./executors.js";
 
 const c = { g: "\x1b[32m", r: "\x1b[31m", y: "\x1b[33m", m: "\x1b[35m", b: "\x1b[1m", d: "\x1b[2m", x: "\x1b[0m" };
 const tierColor = { green: c.g, amber: c.y, red: c.r, blocked: c.r } as const;
@@ -80,8 +81,15 @@ const d4 = cosign.submit(mitra.request({ action: "data_share", data: ["health re
 show(d4);
 info(`Mitra's screen shows the number ${c.b}${d4.numberMatch}${c.x}${c.d}; Kavya must pick the same number`);
 try { cosign.approve(d4.requestId, "1234", { numberMatch: "11" === d4.numberMatch ? "12" : "11" }); } catch (e) { no((e as Error).message); }
-cosign.approve(d4.requestId, "1234", { numberMatch: d4.numberMatch });
+const a4 = cosign.approve(d4.requestId, "1234", { numberMatch: d4.numberMatch });
 ok("Approved with PIN + number-match");
+const hospital = new MockDataHolder("CityCare Hospital", () => cosign.publicKeys());
+const ask = (fields: string[], recipient = "FitLife Insurance") => hospital.release({ subject: USER, recipient, fields, agentId, token: a4.token });
+const hs = (r: ReturnType<typeof ask>) => (r.ok ? ok(`CityCare Hospital released ${r.released?.join(", ")} (${r.ref})`) : no(`CityCare Hospital refused: ${r.reason}`));
+hs(ask(["health records 2035–2040", "full medical history"]));
+hs(ask(["health records 2035–2040"], "QuickLoans"));
+hs(ask(["health records 2035–2040"]));
+hs(ask(["health records 2035–2040"]));
 
 await title("6. Hijack — hidden text on a web page tries to pay ₹9,999");
 const rogue = new AgentClient("agt_unknown", newKeyPair().privateKey, USER);

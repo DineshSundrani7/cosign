@@ -249,6 +249,7 @@ export class CosignService {
       amt: record.body.amount,
       payee: record.body.payee,
       recipient: record.body.recipient,
+      data: record.body.data,
       reqHash: record.hash,
       tier: record.tier as TokenClaims["tier"],
       decidedBy,

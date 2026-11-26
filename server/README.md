@@ -13,7 +13,7 @@ Needs Node.js 20+.
 cd server
 npm install
 npm run demo     # plays ten scenarios end to end in the terminal
-npm test         # 17 automated tests
+npm test         # 21 automated tests
 npm start        # HTTP API + approval page on http://localhost:8787, data saved in cosign.db (SQLite)
                  # kavya@cosign (PIN 1234) and her mother sunanda@cosign (big requests go to Kavya)
 ```
@@ -73,3 +73,9 @@ Request format: [`../design/SPEC.md`](../design/SPEC.md) · Threat model: [`../d
 | GET / POST | `/users/:address/mandates` | List or add limits; `POST /users/:address/mandates/:id { state }` to pause or revoke |
 | POST | `/bank/refund` | `{ txnId }` — mock refund |
 | GET | `/receipts` | Receipt log and chain check |
+| POST | `/data/release` | Mock hospital / consent manager — releases only the approved fields, to the approved recipient, once |
+| POST | `/contracts/sign` | Mock e-sign desk — signs only with a contract token for that counterparty |
+| GET | `/metrics?user=` | Regret rate, asks per week, median time to decide, attacks blocked |
+| GET | `/openapi.yaml` | Full API description (OpenAPI 3.1, also in `design/openapi.yaml`) |
+
+Every POST body is validated (zod); bad input gets a 400 with a readable reason.

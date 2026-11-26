@@ -55,6 +55,7 @@ export interface TokenClaims {
   amt?: number;
   payee?: string;
   recipient?: string;
+  data?: string[]; // data_share: exactly which fields may be released
   reqHash: string; // sha256 of the canonical request body
   tier: Exclude<Tier, "blocked">;
   decidedBy: string; // "mandate:<id>", "user:pin", "user:pin+number-match" or "circle:<approver>"
