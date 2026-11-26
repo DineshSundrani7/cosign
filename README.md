@@ -1,6 +1,8 @@
 > [!IMPORTANT]
 > **Early prototype — not a launched product.** I built this part-time alongside my college studies to test the idea. There are no real users, banks or money. Those are all simulated.
 >
+> The website deliberately shows no personal names or links; authorship is recorded here in the repo.
+>
 > **The idea is mine. The code is AI-built.** The idea and the product decisions (the problem, who it's for, the families-first then banks strategy, what to build and leave out) are mine. The website, backend, tests and documents were written with Claude (Anthropic's AI assistant), working from my direction. Details in [How I built this with AI](#how-i-built-this-with-ai).
 
 # Cosign — your agent proposes, you cosign
@@ -54,7 +56,6 @@ cd server && npm install && npm run demo
 | Metrics | North Star (protected-action rate), regret rate, guardrails, first test |
 | Go to market | Families first, banks next; who pays by year; risks |
 | Build log | How it was made with AI, step by step |
-| About | DNS Labs and Dinesh Sundrani |
 | FAQ | Common questions (the same list powers the chat assistant) |
 
 All people, agents and sellers in the demo are fictional.

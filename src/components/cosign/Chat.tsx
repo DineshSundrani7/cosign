@@ -48,7 +48,7 @@ export function Chat() {
     setBusy(true);
     const put = (content: string) => setMsgs((m) => [...m.slice(0, -1), { role: "assistant", content }]);
     if (sample) {
-      const brief = `You are the help assistant on the Cosign website (a product concept by DNS Labs, built by Dinesh Sundrani). Answer the visitor's latest message in 2-4 short, plain sentences, using only these facts. Answer the specific question asked, not a general overview. If the facts don't cover it, say so briefly and suggest the FAQ or the live demo. Never invent prices, dates, partners or features.\n\nFACTS:\n${SITE_FACTS}`;
+      const brief = `You are the help assistant on the Cosign website (an independent product prototype built part-time by a student; never name the creator). Answer the visitor's latest message in 2-4 short, plain sentences, using only these facts. Answer the specific question asked, not a general overview. If the facts don't cover it, say so briefly and suggest the FAQ or the live demo. Never invent prices, dates, partners or features.\n\nFACTS:\n${SITE_FACTS}`;
       let convo = history.slice(1).slice(-8);
       while (convo.length && convo[0].role !== "user") convo = convo.slice(1);
       const prompt: Msg[] = [{ role: "user", content: `${brief}\n\nVisitor: ${convo[0]?.content ?? question}` }, ...convo.slice(1)];

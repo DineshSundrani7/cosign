@@ -14,7 +14,6 @@ const NAV = [
   ["landscape", "Landscape"],
   ["market", "Go to market"],
   ["build", "Build log"],
-  ["about", "About"],
   ["faq", "FAQ"],
 ] as const;
 
@@ -71,7 +70,6 @@ export function Nav() {
                 ))}
               </ul>
               <a href="#demo" onClick={() => setOpen(false)} className="mt-auto rounded-full bg-ink px-5 py-3 text-center font-semibold text-primary-foreground">Try the demo</a>
-              <p className="mt-4 text-center text-xs text-muted-foreground">Built by Dinesh Sundrani · DNS Labs</p>
             </motion.aside>
           </>
         )}
@@ -168,7 +166,7 @@ export function Hero() {
       <div className="pointer-events-none absolute bottom-0 left-[-160px] h-[380px] w-[380px] rounded-full bg-gold-bright/12 blur-3xl drift [animation-delay:-7s]" aria-hidden />
       <div className="relative mx-auto grid max-w-[1240px] items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
-          <p className="text-sm text-muted-foreground"><span className="inline-flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-gold" aria-hidden />A DNS Labs concept · working prototype · in development</span></p>
+          <p className="text-sm text-muted-foreground"><span className="inline-flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-gold" aria-hidden />A product concept · working prototype · in development</span></p>
           <h1 className="mt-5 text-[44px] font-semibold leading-[1.02] md:text-[64px]">
             Your agent proposes.<br /><span className="text-brand">You cosign.</span>
           </h1>
@@ -560,21 +558,6 @@ export function GoToMarket() {
   );
 }
 
-export function About() {
-  return (
-    <Band id="about" label="About" title="A DNS Labs concept, built by Dinesh Sundrani" tone="ink">
-      <div className="grid gap-10 md:grid-cols-[auto_1fr]">
-        <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-[#e8c766] font-display text-4xl font-semibold text-ink">DS</div>
-        <div className="max-w-3xl space-y-4 text-[17px] leading-relaxed">
-          <p>Cosign started from one question: when everyone has an AI agent acting for them, who makes sure a person still decides the things that can't be undone?</p>
-          <p className="opacity-80">Dinesh Sundrani is an MS Entrepreneurship student at IIT Madras with a B.Tech in Electrical Engineering. He has worked in the Founder's Office at Exira, a financing platform for manufacturing MSMEs, and on the business side of Kriya Neuro Technologies, a neurotech startup from IIT Madras's Brain Lab — work that sits where hardware, money and trust meet.</p>
-          <p className="opacity-80">DNS Labs is where he designs and prototypes product ideas like this one: researched, tested against the market, and built to be tried, not just read.</p>
-        </div>
-      </div>
-    </Band>
-  );
-}
-
 export function Sources() {
   const s = [
     ["Outlook Business — NPCI's Unified Agent Protocol for UPI", "https://www.outlookbusiness.com/economy/india-plans-ai-powered-upi-payments-framework-through-unified-agent-protocol"],
@@ -615,13 +598,13 @@ export function Sources() {
 export function Footer() {
   const cols: [string, [string, string][]][] = [
     ["Product", [["How it works", "#how"], ["Under the hood", "#tech"], ["Live demo", "#demo"], ["Landscape", "#landscape"], ["Metrics", "#metrics"]]],
-    ["Company", [["Go to market", "#market"], ["Build log", "#build"], ["About", "#about"], ["FAQ", "#faq"], ["Sources", "#sources"]]],
+    ["Company", [["Go to market", "#market"], ["Build log", "#build"], ["FAQ", "#faq"], ["Sources", "#sources"]]],
   ];
   return (
     <footer className="border-t border-border px-5 pb-24 pt-12 text-sm text-muted-foreground">
       <div className="mx-auto grid max-w-[1240px] gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <p className="flex items-center gap-2 font-display text-lg font-semibold text-ink"><Mark className="h-6 w-6" /> Cosign <span className="font-sans text-sm font-normal text-muted-foreground">by DNS Labs</span></p>
+          <p className="flex items-center gap-2 font-display text-lg font-semibold text-ink"><Mark className="h-6 w-6" /> Cosign</p>
           <p className="mt-3 max-w-sm">Your agent proposes. You cosign. A product concept; all people, agents and sellers in the demo are fictional.</p>
         </div>
         {cols.map(([h, links]) => (
@@ -632,8 +615,8 @@ export function Footer() {
         ))}
       </div>
       <div className="mx-auto mt-10 flex max-w-[1240px] flex-wrap justify-between gap-2 border-t border-border pt-6">
-        <p>© 2026 DNS Labs</p>
-        <p>Built by <span className="font-semibold text-ink">Dinesh Sundrani</span></p>
+        <p>© 2026 Cosign</p>
+        <p>An independent prototype</p>
       </div>
     </footer>
   );

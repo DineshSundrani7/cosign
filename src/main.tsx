@@ -7,7 +7,7 @@ import { Demo } from "./components/cosign/Demo";
 import { TwoDoors } from "./components/cosign/Doors";
 import { LiveEngine } from "./components/cosign/LiveEngine";
 import { Journey } from "./components/cosign/Journey";
-import { About, Footer, GoToMarket, Hero, How, Landscape, Metrics, Nav, Problem, Sources, Who } from "./components/cosign/Sections";
+import { Footer, GoToMarket, Hero, How, Landscape, Metrics, Nav, Problem, Sources, Who } from "./components/cosign/Sections";
 
 function Index() {
   return (
@@ -32,7 +32,6 @@ function Index() {
         <Metrics />
         <GoToMarket />
         <BuildLog />
-        <About />
         <FaqSection />
         <Sources />
       </main>

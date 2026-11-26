@@ -83,13 +83,13 @@ export const FAQ: { q: string; a: string; keys: string[]; hidden?: boolean }[] =
   },
   {
     q: "Is Cosign a real product?",
-    a: "Not as a live product yet. Cosign is in development at DNS Labs: there is this clickable prototype and a working v0 backend (signed agent requests, approval tokens, Family Circle, undo, a mock bank, hospital and e-sign desk, SQLite storage and 21 tests). Banks, money and the people in the demo are simulated.",
+    a: "Not as a live product yet. Cosign is in development: there is this clickable prototype and a working v0 backend (signed agent requests, approval tokens, Family Circle, undo, a mock bank, hospital and e-sign desk, SQLite storage and 21 tests). Banks, money and the people in the demo are simulated.",
     keys: ["real", "available", "download", "launch", "release", "when", "app store", "play store", "sign up", "signup", "waitlist", "buy"],
   },
   {
     q: "Who built this?",
-    a: "Cosign was designed and built by Dinesh Sundrani at DNS Labs.",
-    keys: ["who built", "who made", "who created", "built by", "made by", "dinesh", "sundrani", "dns", "team", "founder", "creator", "author", "developer"],
+    a: "Cosign is an independent prototype, built part-time by a student alongside college studies. The idea and product decisions are the creator's; the code was written with an AI assistant (Claude).",
+    keys: ["who built", "who made", "who created", "built by", "made by", "team", "founder", "creator", "author", "developer"],
   },
   {
     q: "Hello",
