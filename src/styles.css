@@ -1,0 +1,105 @@
+/*
+VOICE: calm, exact, trustworthy; a fintech pitch that reads like a well-set agreement.
+IDEA: a countersigned document. The agent signs first; nothing counts until you cosign.
+PICTURE: a decision slip in the hero whose second signature draws itself, then a seal lands.
+COLOUR and TYPE: white paper, ink #10131a, prussian #0b4f8a leads, carmine #c1121f for the seal; Literata titles, Inter for UI.
+LAYOUT: one composed first screen, full-width bands, the phone demo as the centrepiece.
+*/
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+@import "@fontsource-variable/literata";
+@import "@fontsource-variable/inter";
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --font-display: "Literata Variable", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-mint: var(--mint);
+  --color-mint-soft: var(--mint-soft);
+  --color-seal: var(--seal);
+  --color-seal-soft: var(--seal-soft);
+  --color-green: var(--tier-green);
+  --color-green-soft: var(--tier-green-soft);
+  --color-amber: var(--tier-amber);
+  --color-amber-soft: var(--tier-amber-soft);
+  --color-red: var(--tier-red);
+  --color-red-soft: var(--tier-red-soft);
+  --color-phone: var(--phone);
+}
+
+:root {
+  color-scheme: light;
+  --radius: 0.75rem;
+  --ink: #10131a;
+  --ink-soft: #2a3140;
+  --paper: #ffffff;
+  --brand: #0b4f8a;
+  --brand-soft: #e8f0f8;
+  --mint: #0b7f74;
+  --mint-soft: #e7f6f3;
+  --seal: #c1121f;
+  --seal-soft: #fbeaeb;
+  --tier-green: #1f7a4d;
+  --tier-green-soft: #e7f4ec;
+  --tier-amber: #9a5b00;
+  --tier-amber-soft: #fdf1dc;
+  --tier-red: #b3121e;
+  --tier-red-soft: #fbe9ea;
+  --phone: #0d1830;
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: #ffffff;
+  --primary-foreground: #f6f8fb;
+  --secondary: #f1f4f8;
+  --muted-foreground: #556070;
+  --border: #dde3ea;
+  --input: #cfd7e1;
+}
+
+@layer base {
+  * { border-color: var(--color-border); min-width: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+  body {
+    margin: 0;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.015em; text-wrap: balance; }
+  :focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; border-radius: 4px; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+}
+
+[data-reading] { outline: 3px solid var(--brand); outline-offset: 6px; border-radius: 6px; background: color-mix(in srgb, var(--brand-soft) 60%, transparent); }
+
+@keyframes drift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(40px,-30px) scale(1.08); } }
+@utility drift { animation: drift 14s ease-in-out infinite; }
+
+@utility rule-paper {
+  background-image: repeating-linear-gradient(180deg, transparent 0 31px, var(--border) 31px 32px);
+}
