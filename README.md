@@ -14,10 +14,10 @@ By 2040, personal AI agents pay, sign and share for us. India's payment rails (U
 
 | Folder | What it is | Real or simulated |
 |---|---|---|
-| `server/` | Cosign v0 backend: signed agent requests, policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, a hash-chained receipt log, an MCP connector for real AI assistants, and 12 tests | Logic, signatures and checks are real; the bank and money are simulated |
+| `server/` | Cosign v0 backend: signed agent requests, policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, Family Circle approvals, seller-claim checks, 48-hour undo and disputes, a hash-chained receipt log, an MCP connector for real AI assistants, and 16 tests | Logic, signatures and checks are real; the bank and money are simulated |
 | `src/` + `docs/index.html` | The website and its clickable phone prototype | Demo data is simulated |
-| `docs/SPEC.md` | Draft request and token format, mapped to Google AP2, OpenID CIBA and UPI mandates | — |
-| `docs/SECURITY.md` | How someone would attack Cosign and what stops them | — |
+| `design/SPEC.md` | Draft request and token format, mapped to Google AP2, OpenID CIBA and UPI mandates | — |
+| `design/SECURITY.md` | How someone would attack Cosign and what stops them | — |
 
 Try the backend in one minute:
 
@@ -35,12 +35,16 @@ Claude did the research legwork and wrote most of the code. I set the direction 
 |---|---|
 | Journey | Scroll-driven timeline from 2010 to 2040 with a moving marker |
 | Problem | Why rails alone don't protect people, with market data |
+| Two doors | Who it's for: families directly first, banks and UPI apps next (animated) |
 | How it works | Decision address, PIN, number-matching, signed receipts, four tiers |
+| Under the hood | The 7-step request pipeline and the standards it builds on |
+| Try the real engine | A browser port of the v0 engine: real Ed25519 signatures, PIN lock and bank checks you can click through |
 | Demo | A working phone prototype with 7 scenarios (any 4-digit PIN works) |
 | Landscape | Payment rails, developer approval gateways and data-consent infrastructure, and where Cosign fits |
-| Who it's for | The persona: Kavya, 41, a schoolteacher in Nagpur, and her mother |
+| The persona | Kavya, 41, a schoolteacher in Nagpur, and her mother |
 | Metrics | North Star (protected-action rate), regret rate, guardrails, first test |
-| Go to market | Roadmap to 2040 and risks |
+| Go to market | Families first, banks next; who pays by year; risks |
+| Build log | How it was made with AI, step by step |
 | About | DNS Labs and Dinesh Sundrani |
 | FAQ | Common questions (the same list powers the chat assistant) |
 
@@ -80,6 +84,9 @@ npm run build    # rebuilds docs/
 - `src/components/cosign/Chat.tsx` — chat assistant and FAQ section
 - `src/components/cosign/Listen.tsx` — read-aloud button
 - `src/components/cosign/Journey.tsx` — the 2010–2040 timeline
+- `src/components/cosign/Doors.tsx` — the two-doors section
+- `src/components/cosign/engine.ts` + `LiveEngine.tsx` — the in-browser engine
+- `src/components/cosign/Deep.tsx` — Under the hood and Build log
 - `src/styles.css` — colours and fonts
 
 The built site in `docs/` also opens offline: double-click `docs/index.html`.

@@ -24,6 +24,12 @@ cosign.registerUser(USER, "1234", {
 });
 const { agentId, privateKey } = cosign.registerAgent("Mitra", USER);
 const mitra = new AgentClient(agentId, privateKey, USER);
+cosign.registerUser("sunanda@cosign", "4321", {
+  circleApprover: USER,
+  mandates: [{ id: "solo", category: "*", maxPerAction: 1000, maxPerMonth: 5000, expiresAt: Date.now() + 365 * 864e5 }],
+  knownPayees: ["CarePlus Pharmacy"],
+});
+cosign.setMerchantStock("FreshBasket", 38);
 const bank = new MockBank(() => cosign.publicKeys());
 
 const show = (d: ReturnType<typeof cosign.submit>) =>
@@ -39,7 +45,14 @@ const d1 = cosign.submit(mitra.request({ action: "payment", amount: 2140, payee:
 show(d1);
 bankSays(bank.pay({ from: USER, to: "FreshBasket", amount: 2140, agentId, token: d1.token }));
 
-await title("2. Health insurance ₹18,400 — above every limit");
+await title("2. A seller tells the agent “only 2 left”");
+const dS = cosign.submit(mitra.request({ action: "payment", amount: 1800, payee: "FreshBasket", category: "groceries", purpose: "Dry fruits offer", reversible: true, sellerClaims: [{ claim: "Only 2 left — buy now", kind: "stock", value: 2 }] }));
+info("Cosign checks the seller's own stock feed: 38 in stock");
+show(dS);
+cosign.decline(dS.requestId);
+ok("Kavya says no in one tap");
+
+await title("3. Health insurance ₹18,400 — above every limit");
 const d2 = cosign.submit(mitra.request({ action: "payment", amount: 18400, payee: "Suraksha General", category: "insurance", purpose: "Renew family health insurance", reversible: true }));
 show(d2);
 info("Agent tries to pay before Kavya decides…");
@@ -51,7 +64,7 @@ const a2 = cosign.approve(d2.requestId, "1234");
 ok(`Approved · token valid 5 minutes, single use, ₹18,400 to Suraksha General only`);
 bankSays(bank.pay({ from: USER, to: "Suraksha General", amount: 18400, agentId, token: a2.token }));
 
-await title("3. Attacks on the token");
+await title("4. Attacks on the token");
 info("Someone replays the same token…");
 bankSays(bank.pay({ from: USER, to: "Suraksha General", amount: 18400, agentId, token: a2.token }));
 const d3 = cosign.submit(mitra.request({ action: "payment", amount: 900, payee: "FreshBasket", category: "groceries", purpose: "Top-up", reversible: true }));
@@ -62,7 +75,7 @@ bankSays(bank.pay({ from: USER, to: "refund-desk", amount: 2900, agentId, token:
 info("Someone uses the ₹900 token to pay a different shop…");
 bankSays(bank.pay({ from: USER, to: "OtherShop", amount: 900, agentId, token: d3.token }));
 
-await title("4. Share 5 years of health records — irreversible");
+await title("5. Share 5 years of health records — irreversible");
 const d4 = cosign.submit(mitra.request({ action: "data_share", data: ["health records 2035–2040"], recipient: "FitLife Insurance", purpose: "₹3,000 premium discount", reversible: false }));
 show(d4);
 info(`Mitra's screen shows the number ${c.b}${d4.numberMatch}${c.x}${c.d}; Kavya must pick the same number`);
@@ -70,7 +83,7 @@ try { cosign.approve(d4.requestId, "1234", { numberMatch: "11" === d4.numberMatc
 cosign.approve(d4.requestId, "1234", { numberMatch: d4.numberMatch });
 ok("Approved with PIN + number-match");
 
-await title("5. Hijack — hidden text on a web page tries to pay ₹9,999");
+await title("6. Hijack — hidden text on a web page tries to pay ₹9,999");
 const rogue = new AgentClient("agt_unknown", newKeyPair().privateKey, USER);
 show(cosign.submit(rogue.request({ action: "payment", amount: 9999, payee: "refund-desk", category: "refund", purpose: "Pending refund", reversible: true })));
 const forged = mitra.request({ action: "payment", amount: 500, payee: "FreshBasket", category: "groceries", purpose: "Snacks", reversible: true });
@@ -78,14 +91,33 @@ forged.body.amount = 2999; forged.body.payee = "refund-desk";
 info("A request signed by Mitra, edited in transit…");
 show(cosign.submit(forged));
 
-await title("6. Flood — a lender's agent fires request after request");
+await title("7. Flood — a lender's agent fires request after request");
 const lender = cosign.registerAgent("QuickLoan agent", USER);
 const ql = new AgentClient(lender.agentId, lender.privateKey, USER);
 let last;
 for (let i = 0; i < 6; i++) last = cosign.submit(ql.request({ action: "contract", recipient: "QuickLoan", purpose: `Pre-approved loan offer ${i + 1}`, reversible: false }));
 show(last!);
 
-await title("7. Receipts — tamper-evident history");
+await title("8. Family Circle — Kavya's mother's agent wants ₹6,200 for physio");
+const sakhiKeys = cosign.registerAgent("Sakhi", "sunanda@cosign");
+const sakhi = new AgentClient(sakhiKeys.agentId, sakhiKeys.privateKey, "sunanda@cosign");
+const med = cosign.submit(sakhi.request({ action: "payment", amount: 960, payee: "CarePlus Pharmacy", category: "medicines", purpose: "Monthly medicines", reversible: true }));
+info("Medicines ₹960 — inside Sunanda's own ₹1,000 limit:"); show(med);
+const physio = cosign.submit(sakhi.request({ action: "payment", amount: 6200, payee: "Nagpur Physio Care", category: "health", purpose: "Knee brace + 6 physio visits", reversible: true }));
+info("Physio ₹6,200 — above her limit, so it goes to Kavya:"); show(physio);
+try { cosign.approve(physio.requestId, "4321"); } catch (e) { no(`Sunanda's own PIN can't approve it: ${(e as Error).message}`); }
+const pa = cosign.approve(physio.requestId, "1234");
+ok("Kavya cosigns from her phone");
+bankSays(bank.pay({ from: "sunanda@cosign", to: "Nagpur Physio Care", amount: 6200, agentId: sakhiKeys.agentId, token: pa.token }));
+
+await title("9. Undo — Sakhi accidentally orders the medicines twice");
+const oops = cosign.submit(sakhi.request({ action: "payment", amount: 960, payee: "CarePlus Pharmacy", category: "medicines", purpose: "Monthly medicines (duplicate)", reversible: true }));
+show(oops);
+cosign.undo(oops.requestId);
+ok("Undone within 48 hours — the unused token is cancelled");
+bankSays(bank.pay({ from: "sunanda@cosign", to: "CarePlus Pharmacy", amount: 960, agentId: sakhiKeys.agentId, token: oops.token }));
+
+await title("10. Receipts — tamper-evident history");
 ok(`${cosign.receipts.entries.length} receipts, chain check: ${JSON.stringify(cosign.receipts.verify())}`);
 info("Someone quietly edits receipt #0 to hide a payment…");
 cosign.receipts.entries[0]!.summary = "Pay ₹1 to FreshBasket";

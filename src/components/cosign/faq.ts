@@ -32,9 +32,14 @@ export const FAQ: { q: string; a: string; keys: string[]; hidden?: boolean }[] =
     keys: ["technical", "technically", "architecture", "pipeline", "infrastructure", "backend", "token", "api", "protocol", "ap2", "ciba", "enforce", "under the hood", "integrate"],
   },
   {
-    q: "Who would launch it first?",
-    a: "A bank or UPI app. It holds the money, so it can refuse to release payments above your limits without a cosign. The first use case is family safety: a parent's agent can't spend above ₹1,000 without the adult child's cosign.",
-    keys: ["launch first", "go to market", "gtm", "bank", "partner", "first use case", "customer", "target", "who uses"],
+    q: "Is this just a frontend?",
+    a: "No. There's a working v0 backend in the project's code: signed agent requests, a policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, Family Circle, undo and 16 automated tests. The “Try the real engine” section runs the same logic in your browser with real signatures. The bank and money are simulated.",
+    keys: ["frontend", "front end", "backend", "back end", "real code", "code", "github", "working", "built", "engine", "tests", "demo only", "just a website"],
+  },
+  {
+    q: "Who is Cosign for?",
+    a: "Two doors. First, people and families directly: a free connector for AI assistants and a Family plan, so a parent's or teen's agent can't go above their limit without your cosign. Next, banks and UPI apps, which embed “Protected by Cosign” and refuse agent payments without a cosign token.",
+    keys: ["who is it for", "who uses", "target", "customer", "bank", "banks", "families", "b2b", "b2c", "go to market", "gtm", "launch first", "partner", "first use case"],
   },
   {
     q: "What are the green, amber and red tiers?",
@@ -63,12 +68,12 @@ export const FAQ: { q: string; a: string; keys: string[]; hidden?: boolean }[] =
   },
   {
     q: "Can my family use it?",
-    a: "Yes. A Cosign Circle routes an elder's or a teen's big requests to a trusted family approver, like UPI Circle, and the receipt records who decided for whom.",
+    a: "Yes — families are the first audience. With a Family plan, an elder's or teen's agent can't go above their limit, pay a new payee or share their data without a trusted family member's cosign. The parent agrees and keeps their own phone. UPI Circle already does part of this for UPI payments; Cosign extends it to AI agents, every app, data sharing and contracts.",
     keys: ["family", "parent", "mother", "father", "elder", "teen", "child", "kid", "circle", "grandparent"],
   },
   {
     q: "What does it cost?",
-    a: "The proposal: banks and UPI apps pay per protected user, families pay for a Circle plan to manage a parent's or teen's agents, and later merchants pay per verified receipt once it measurably cuts returns.",
+    a: "The proposal: the connector is free; families pay for a Family plan first. Next, banks and UPI apps pay per protected customer, and agent companies pay for know-your-agent registration. Later, merchants pay for verified orders and insurers share premiums on a cosign guarantee. Selling people's data is off the table.",
     keys: ["cost", "price", "pricing", "free", "fee", "charge", "business model", "revenue", "monetize", "monetise", "how much", "subscription"],
   },
   {
@@ -78,7 +83,7 @@ export const FAQ: { q: string; a: string; keys: string[]; hidden?: boolean }[] =
   },
   {
     q: "Is Cosign a real product?",
-    a: "Not as a live product yet. Cosign is in development at DNS Labs: there is this clickable prototype and a working v0 backend (signed agent requests, approval tokens, a mock bank and tests). Banks, money and the people in the demo are simulated.",
+    a: "Not as a live product yet. Cosign is in development at DNS Labs: there is this clickable prototype and a working v0 backend (signed agent requests, approval tokens, Family Circle, undo, a mock bank and 16 tests). Banks, money and the people in the demo are simulated.",
     keys: ["real", "available", "download", "launch", "release", "when", "app store", "play store", "sign up", "signup", "waitlist", "buy"],
   },
   {

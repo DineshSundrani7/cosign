@@ -12,7 +12,13 @@
  *   POST /bank/pay        PaymentInstruction  the mock bank (enforces the token)
  *   GET  /receipts                        receipt log + chain check
  *
- * Demo user: kavya@cosign, PIN 1234, mandate groceries ≤ ₹3,000.
+ *   POST /requests/:id/undo               within 48 hours of an approved payment
+ *   POST /requests/:id/dispute {reason}   receipt chain returned as evidence
+ *   GET/POST /users/:address/mandates     list or add limits; POST /users/:address/mandates/:id {state}
+ *   POST /bank/refund {txnId}
+ *
+ * Demo users: kavya@cosign (PIN 1234, groceries ≤ ₹3,000) and her mother sunanda@cosign
+ * (solo limit ₹1,000; anything bigger goes to Kavya through the Family Circle).
  */
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { MockBank } from "./bank.js";
@@ -24,6 +30,12 @@ export function createApp() {
     mandates: [{ id: "groceries", category: "groceries", maxPerAction: 3000, maxPerMonth: 12000, expiresAt: Date.now() + 90 * 864e5 }],
     knownPayees: ["FreshBasket"],
   });
+  cosign.registerUser("sunanda@cosign", "4321", {
+    circleApprover: "kavya@cosign", // Kavya's mother: big requests go to Kavya
+    mandates: [{ id: "solo", category: "*", maxPerAction: 1000, maxPerMonth: 5000, expiresAt: Date.now() + 365 * 864e5 }],
+    knownPayees: ["CarePlus Pharmacy"],
+  });
+  cosign.setMerchantStock("KartBazaar", 38);
   const bank = new MockBank(() => cosign.publicKeys());
 
   const send = (res: ServerResponse, status: number, body: unknown, type = "application/json") => {
@@ -60,12 +72,21 @@ export function createApp() {
           return send(res, 200, cosign.approve(id, String(pin ?? ""), { numberMatch: numberMatch ? String(numberMatch) : undefined }));
         }
         if (req.method === "POST" && parts[2] === "decline") return send(res, 200, cosign.decline(id));
+        if (req.method === "POST" && parts[2] === "undo") return send(res, 200, cosign.undo(id));
+        if (req.method === "POST" && parts[2] === "dispute") { const { reason } = await readJson(req); return send(res, 200, cosign.dispute(id, String(reason ?? "No reason given"))); }
       }
       if (req.method === "GET" && parts[0] === "approve" && parts[1]) {
         const r = cosign.get(parts[1]);
         return r ? send(res, 200, approvalPage(r.requestId, describe(r.body), r.tier, r.reasons, r.status, r.body.purpose), "text/html; charset=utf-8") : send(res, 404, "Unknown request", "text/plain");
       }
+      if (parts[0] === "users" && parts[1] && parts[2] === "mandates") {
+        const user = decodeURIComponent(parts[1]);
+        if (req.method === "GET" && parts.length === 3) return send(res, 200, cosign.mandates(user));
+        if (req.method === "POST" && parts.length === 3) { cosign.addMandate(user, await readJson(req)); return send(res, 201, cosign.mandates(user)); }
+        if (req.method === "POST" && parts[3]) { const { state } = await readJson(req); cosign.setMandateState(user, parts[3], state); return send(res, 200, cosign.mandates(user)); }
+      }
       if (req.method === "POST" && url.pathname === "/bank/pay") return send(res, 200, bank.pay(await readJson(req)));
+      if (req.method === "POST" && url.pathname === "/bank/refund") { const { txnId } = await readJson(req); return send(res, 200, bank.refund(String(txnId))); }
       if (req.method === "GET" && url.pathname === "/receipts") return send(res, 200, { chain: cosign.receipts.verify(), entries: cosign.receipts.entries });
       return send(res, 404, { error: "Not found" });
     } catch (e) {
@@ -78,7 +99,7 @@ const esc = (s: string) => s.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "
 
 function approvalPage(id: string, summary: string, tier: string, reasons: string[], status: string, purpose: string) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cosign request</title>
-<style>body{margin:0;font:16px/1.5 system-ui,sans-serif;background:#eaf3fc;color:#10131a;display:grid;place-items:center;min-height:100vh}main{box-sizing:border-box;background:#fff;border-radius:20px;padding:24px;width:min(380px,92vw);box-shadow:0 20px 50px -20px #1f6fbf55}.pill{display:inline-block;border-radius:99px;padding:2px 10px;font-size:13px;font-weight:700;background:${tier === "red" ? "#fbe9ea;color:#b3121e" : "#fdf1dc;color:#9a5b00"}}h1{font-size:22px;margin:10px 0 4px}ul{padding-left:18px;color:#556070;font-size:14px}input{width:100%;box-sizing:border-box;font-size:20px;padding:12px;border:1px solid #cfd7e1;border-radius:12px;margin-top:8px;letter-spacing:6px;text-align:center}button{width:100%;min-height:48px;margin-top:10px;border:0;border-radius:12px;font-weight:700;font-size:16px}.yes{background:#10131a;color:#fff}.no{background:#f1f4f8;color:#10131a}#msg{margin-top:12px;font-weight:600}</style></head>
+<style>body{margin:0;font:16px/1.5 system-ui,sans-serif;background:#fbf6ea;color:#10131a;display:grid;place-items:center;min-height:100vh}main{box-sizing:border-box;background:#fff;border-radius:20px;padding:24px;width:min(380px,92vw);box-shadow:0 20px 50px -20px #c9972866}.pill{display:inline-block;border-radius:99px;padding:2px 10px;font-size:13px;font-weight:700;background:${tier === "red" ? "#fbe9ea;color:#b3121e" : "#fdf1dc;color:#9a5b00"}}h1{font-size:22px;margin:10px 0 4px}ul{padding-left:18px;color:#556070;font-size:14px}input{width:100%;box-sizing:border-box;font-size:20px;padding:12px;border:1px solid #cfd7e1;border-radius:12px;margin-top:8px;letter-spacing:6px;text-align:center}button{width:100%;min-height:48px;margin-top:10px;border:0;border-radius:12px;font-weight:700;font-size:16px}.yes{background:#10131a;color:#fff}.no{background:#f1f4f8;color:#10131a}#msg{margin-top:12px;font-weight:600}</style></head>
 <body><main><span class="pill">${esc(tier)} · ${esc(status)}</span><h1>${esc(summary)}</h1><p style="color:#556070;margin:0">${esc(purpose)}</p><ul>${reasons.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
 ${status === "pending" ? `${tier === "red" ? `<label>Number on your agent's screen<input id="nm" inputmode="numeric" maxlength="2"></label>` : ""}<label>Cosign PIN<input id="pin" type="password" inputmode="numeric" maxlength="4"></label><button class="yes" id="yes">Cosign</button><button class="no" id="no">Say no</button>` : ""}
 <p id="msg"></p></main>

@@ -2,7 +2,7 @@
 
 The working core of Cosign: an AI agent asks, a person cosigns, and a bank refuses to act without a valid cosign.
 
-**Real:** Ed25519 signatures, the policy engine, PIN-locked device keys, single-use approval tokens, offline token verification, replay and tamper detection, rate limiting, a hash-chained receipt log, and an MCP connector for real AI assistants.
+**Real:** Ed25519 signatures, the policy engine, PIN-locked device keys, single-use approval tokens, offline token verification, replay and tamper detection, rate limiting, Family Circle approvals, seller-claim checks against a stock feed, 48-hour undo and disputes, managing limits, a hash-chained receipt log, and an MCP connector for real AI assistants.
 **Simulated:** the bank, the money, and the phone's secure chip (a PIN-encrypted key file).
 
 ## Run it
@@ -12,9 +12,10 @@ Needs Node.js 20+.
 ```bash
 cd server
 npm install
-npm run demo     # plays seven scenarios end to end in the terminal
-npm test         # 12 automated tests
-npm start        # HTTP API + approval page on http://localhost:8787 (user kavya@cosign, PIN 1234)
+npm run demo     # plays ten scenarios end to end in the terminal
+npm test         # 16 automated tests
+npm start        # HTTP API + approval page on http://localhost:8787
+                 # kavya@cosign (PIN 1234) and her mother sunanda@cosign (big requests go to Kavya)
 ```
 
 ## How a request flows
@@ -27,7 +28,11 @@ npm start        # HTTP API + approval page on http://localhost:8787 (user kavya
 6. **Bank enforces** (`src/bank.ts`) — verifies the token offline with Cosign's public keys and refuses anything that doesn't match.
 7. **Receipt log** (`src/receipts.ts`) — every decision chained by hash, so edits are detectable.
 
-Request format: [`../docs/SPEC.md`](../docs/SPEC.md) · Threat model: [`../docs/SECURITY.md`](../docs/SECURITY.md)
+**Family Circle:** a parent's account can name a family approver. Requests above the parent's own limit need the approver's PIN and device key; the token records who decided for whom.
+**Seller checks:** a "stock" claim ("only 2 left") is re-checked against the seller's stock feed. A false or unverifiable claim is never green.
+**Undo and disputes:** approved payments can be undone for 48 hours (an unused token is cancelled, so the bank refuses it); after that, a dispute returns the receipt chain as evidence.
+
+Request format: [`../design/SPEC.md`](../design/SPEC.md) · Threat model: [`../design/SECURITY.md`](../design/SECURITY.md)
 
 ## Use it from a real AI assistant (MCP)
 
@@ -56,4 +61,8 @@ Request format: [`../docs/SPEC.md`](../docs/SPEC.md) · Threat model: [`../docs/
 | POST | `/requests/:id/decline` | One-tap no |
 | GET | `/approve/:id` | Phone-style approval page |
 | POST | `/bank/pay` | Mock bank — needs a valid token |
+| POST | `/requests/:id/undo` | Undo within 48 hours (cancels an unused token) |
+| POST | `/requests/:id/dispute` | `{ reason }` — returns the receipt chain as evidence |
+| GET / POST | `/users/:address/mandates` | List or add limits; `POST /users/:address/mandates/:id { state }` to pause or revoke |
+| POST | `/bank/refund` | `{ txnId }` — mock refund |
 | GET | `/receipts` | Receipt log and chain check |

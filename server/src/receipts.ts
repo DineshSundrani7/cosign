@@ -7,7 +7,7 @@ import { canonical, sha256 } from "./crypto.js";
 export interface Receipt {
   index: number;
   at: number;
-  event: "approved" | "declined" | "blocked" | "pending" | "executed" | "refused";
+  event: "approved" | "declined" | "blocked" | "pending" | "undone" | "disputed" | "mandate";
   requestId?: string;
   agent?: string;
   user?: string;

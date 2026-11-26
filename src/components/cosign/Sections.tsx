@@ -6,8 +6,10 @@ import { Mark, Signature, Stamp } from "./Stamp";
 const NAV = [
   ["journey", "Journey"],
   ["problem", "Problem"],
+  ["doors", "Who it's for"],
   ["how", "How it works"],
   ["tech", "Under the hood"],
+  ["engine", "Real engine"],
   ["demo", "Demo"],
   ["landscape", "Landscape"],
   ["market", "Go to market"],
@@ -95,7 +97,7 @@ function Band({ id, label, title, kicker, children, tone = "plain" }: { id: stri
     <section id={id} className={`${toneCls} px-5 py-20 md:py-24`}>
       <div className="mx-auto max-w-[1240px]">
         <Reveal>
-          <p className={`text-sm font-semibold ${tone === "ink" ? "text-[#9cc3e8]" : "text-brand"}`}>{label}</p>
+          <p className={`text-sm font-semibold ${tone === "ink" ? "text-[#e8c766]" : "text-brand"}`}>{label}</p>
           <h2 className="mt-2 max-w-3xl text-[32px] font-semibold leading-[1.08] md:text-[46px]">{title}</h2>
           {kicker && <p className={`mt-4 max-w-2xl text-[17px] ${tone === "ink" ? "opacity-80" : "text-muted-foreground"}`}>{kicker}</p>}
         </Reveal>
@@ -162,16 +164,16 @@ export function Hero() {
   return (
     <section id="top" className="relative overflow-hidden px-5 pb-16 pt-12 md:pt-20">
       <div className="pointer-events-none absolute inset-0 rule-paper opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent_75%)]" aria-hidden />
-      <div className="pointer-events-none absolute -top-24 right-[-120px] h-[560px] w-[560px] rounded-full bg-sky/15 blur-3xl drift" aria-hidden />
-      <div className="pointer-events-none absolute bottom-0 left-[-160px] h-[380px] w-[380px] rounded-full bg-sky/10 blur-3xl drift [animation-delay:-7s]" aria-hidden />
+      <div className="pointer-events-none absolute -top-24 right-[-120px] h-[560px] w-[560px] rounded-full bg-gold-bright/20 blur-3xl drift" aria-hidden />
+      <div className="pointer-events-none absolute bottom-0 left-[-160px] h-[380px] w-[380px] rounded-full bg-gold-bright/12 blur-3xl drift [animation-delay:-7s]" aria-hidden />
       <div className="relative mx-auto grid max-w-[1240px] items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
-          <p className="text-sm text-muted-foreground"><span className="inline-flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-sky" aria-hidden />A DNS Labs concept · working prototype · in development</span></p>
+          <p className="text-sm text-muted-foreground"><span className="inline-flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-gold" aria-hidden />A DNS Labs concept · working prototype · in development</span></p>
           <h1 className="mt-5 text-[44px] font-semibold leading-[1.02] md:text-[64px]">
-            Your agent proposes.<br /><span className="bg-gradient-to-r from-brand to-[#4a9be0] bg-clip-text text-transparent">You cosign.</span>
+            Your agent proposes.<br /><span className="text-brand">You cosign.</span>
           </h1>
           <p className="mt-6 max-w-[34rem] text-[17px] leading-relaxed text-muted-foreground">
-            India's payment rails are learning to let AI agents spend small amounts without asking. Cosign is the one place where everything an agent can't take back waits for your second signature: money above your limits, your personal data, and your name on a contract.
+            India's payment rails are learning to let AI agents spend small amounts without asking. Cosign is the one place where everything an agent can't take back waits for your second signature — or your family's: money above your limits, your personal data, and your name on a contract.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#demo" className="rounded-full bg-ink px-6 py-3 font-semibold text-primary-foreground transition hover:bg-ink-soft">Try the live demo</a>
@@ -205,7 +207,7 @@ export function Problem() {
   return (
     <Band id="problem" label="The problem" title="Rails decide how agents pay. Nobody decides what they should never do alone." tone="tint">
       <blockquote className="rounded-2xl bg-ink p-8 text-xl leading-relaxed text-primary-foreground md:p-10 md:text-2xl">
-        In an agent-run life there is no single, trusted place where a person says yes or no <em className="not-italic text-[#9cc3e8]">before</em> an action that can't be undone happens — across every agent, app and seller, and across money, data and signatures. Consent today is a blanket “allow all” or a flood of pop-ups, and neither proves who decided.
+        In an agent-run life there is no single, trusted place where a person says yes or no <em className="not-italic text-[#e8c766]">before</em> an action that can't be undone happens — across every agent, app and seller, and across money, data and signatures. Consent today is a blanket “allow all” or a flood of pop-ups, and neither proves who decided.
       </blockquote>
       <ol className="mt-10 grid gap-6 md:grid-cols-3">
         {items.map(([t, d], i) => (
@@ -238,30 +240,43 @@ export function How() {
     ["Everyone gets the receipt", "A signed record of who proposed, who decided and why. Merchants accept it in disputes; you get 48 hours to undo."],
   ];
   const tiers = [
-    ["green", "Green", "Inside a mandate", "Goes through. You get a receipt."],
-    ["amber", "Amber", "Above a limit, new payee or flagged seller", "Waits for your PIN."],
-    ["red", "Red", "Data, contracts, health — can't be undone", "A narrower option first, then number-match and PIN."],
-    ["blocked", "Blocked", "Unregistered agent, hijack or flood", "Never reaches you. Logged on a receipt."],
+    { k: "green", name: "Green", who: "Nobody needs to look", when: "Inside a limit you set", what: "Goes through, with a receipt and a 48-hour undo.", hue: "61,207,145", level: 1 },
+    { k: "amber", name: "Amber", who: "You look once", when: "Above a limit, a new payee or a flagged seller", what: "Waits for your PIN.", hue: "245,181,74", level: 2 },
+    { k: "red", name: "Red", who: "You look twice", when: "Data, contracts, health — can't be undone", what: "A narrower option first, then number-match and PIN.", hue: "255,107,107", level: 3 },
+    { k: "blocked", name: "Blocked", who: "It never reaches you", when: "Unregistered agent, hijack or flood", what: "Stopped at the gate and logged on a receipt.", hue: "139,149,167", level: 0 },
   ] as const;
-  const tierCls = { green: "border-green bg-green-soft", amber: "border-amber bg-amber-soft", red: "border-red bg-red-soft", blocked: "border-muted-foreground bg-secondary" };
-  const dotCls = { green: "bg-green", amber: "bg-amber", red: "bg-red", blocked: "bg-ink" };
   return (
     <Band id="how" label="How it works" title="One address, one PIN, one receipt — for every agent you use" tone="ink">
       <ol className="grid gap-3 md:grid-cols-4">
         {steps.map(([t, d], i) => (
           <li key={t} className="rounded-xl border border-primary-foreground/20 p-5">
-            <span className="font-display text-3xl font-semibold text-[#9cc3e8]">{i + 1}</span>
+            <span className="font-display text-3xl font-semibold text-[#e8c766]">{i + 1}</span>
             <p className="mt-3 text-lg font-semibold">{t}</p>
             <p className="mt-1 text-sm opacity-75">{d}</p>
           </li>
         ))}
       </ol>
-      <h3 className="mb-4 mt-14 text-2xl font-semibold">Four tiers decide who has to look</h3>
-      <div className="grid gap-3 md:grid-cols-2">
-        {tiers.map(([k, name, when, what]) => (
-          <div key={k} className={`rounded-xl border-l-8 p-4 text-ink ${tierCls[k]}`}>
-            <p className="flex flex-wrap items-center gap-2 font-semibold"><span className={`h-3 w-3 rounded-full ${dotCls[k]}`} />{name} <span className="font-normal opacity-70">— {when}</span></p>
-            <p className="mt-1 text-sm">{what}</p>
+      <h3 className="mb-2 mt-14 text-2xl font-semibold">Four tiers decide who has to look</h3>
+      <p className="mb-6 max-w-xl text-sm opacity-70">The more an action can hurt you, the more of you it needs.</p>
+      <div className="relative mb-4 hidden h-1.5 overflow-hidden rounded-full md:block" aria-hidden style={{ background: "linear-gradient(90deg, rgb(61,207,145) 0%, rgb(245,181,74) 38%, rgb(255,107,107) 70%, rgb(139,149,167) 100%)" }} />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {tiers.map((t) => (
+          <div
+            key={t.k}
+            className="relative overflow-hidden rounded-2xl border border-white/10 p-5"
+            style={{ background: `radial-gradient(120% 90% at 0% 0%, rgba(${t.hue},0.28) 0%, rgba(${t.hue},0.06) 45%, rgba(255,255,255,0.02) 100%)` }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-display text-2xl font-semibold" style={{ color: `rgb(${t.hue})` }}>{t.name}</span>
+              <span className="flex gap-1" role="img" aria-label={t.level ? `Needs ${t.level === 1 ? "no" : t.level === 2 ? "one" : "two"} check${t.level === 3 ? "s" : ""} from you` : "Stopped at the gate"}>
+                {[1, 2, 3].map((n) => (
+                  <span key={n} className="h-2 w-5 rounded-full" style={{ background: t.level >= n ? `rgb(${t.hue})` : "rgba(255,255,255,0.12)" }} />
+                ))}
+              </span>
+            </div>
+            <p className="mt-3 text-lg font-semibold">{t.who}</p>
+            <p className="mt-1 text-sm opacity-70">{t.when}</p>
+            <p className="mt-4 border-t border-white/10 pt-3 text-sm">{t.what}</p>
           </div>
         ))}
       </div>
@@ -272,7 +287,7 @@ export function How() {
           ["Ten asks a week, at most", "Rate limits and bundling keep questions rare, so each one gets read."],
           ["Only registered agents can ask", "NPCI ended P2P UPI collect requests in Oct 2025 because of fraud. Cosign starts from there."],
         ].map(([t, d]) => (
-          <div key={t} className="border-t-2 border-[#9cc3e8] pt-4">
+          <div key={t} className="border-t-2 border-[#e8c766] pt-4">
             <p className="text-lg font-semibold">{t}</p>
             <p className="mt-2 text-sm opacity-75">{d}</p>
           </div>
@@ -307,7 +322,7 @@ export function Landscape() {
     ["What it covers", "Payments", "Tool calls in software teams", "Money, data and signatures"],
     ["Built for", "Merchants, banks, agent makers", "Engineers and companies", "Individuals and families"],
     ["Its job", "Let agents pay without asking each time", "Hold risky actions for a reviewer", "Decide the exceptions and prove who decided"],
-    ["Who pays", "Merchants and transaction fees", "Companies", "Banks, UPI apps and families (proposed)"],
+    ["Who pays", "Merchants and transaction fees", "Companies", "Families first, then banks (proposed)"],
   ];
   const edges = [
     ["One inbox for money, data and signatures", "Rails cover payments, consent managers cover data. Cosign is the only place a person sees both, plus contracts, in one queue."],
@@ -380,7 +395,7 @@ export function Landscape() {
           </div>
         ))}
       </div>
-      <p className="mt-8 rounded-xl bg-amber-soft p-4 text-sm"><span className="font-semibold">Honest risk:</span> if NPCI or the card networks add their own approval inbox inside every UPI app, the payments half of Cosign becomes a feature. The defence is the other half — data, contracts, seller checks and family approvals — which no rail is built to handle.</p>
+      <p className="mt-8 rounded-2xl border border-gold/30 bg-gold-soft p-5 text-sm"><span className="font-semibold text-gold">Honest risk:</span> if NPCI or the card networks add their own approval inbox inside every UPI app, the payments half of Cosign becomes a feature. The defence is the other half — data, contracts, seller checks and family approvals — which no rail is built to handle.</p>
     </Band>
   );
 }
@@ -393,7 +408,7 @@ export function Who() {
     "Who protects Aai when a seller's agent pushes hers?",
   ];
   return (
-    <Band id="who" label="Who it's for" title="Meet Kavya" tone="tint">
+    <Band id="who" label="The persona" title="Meet Kavya" tone="tint">
       <div className="grid gap-10 md:grid-cols-[1fr_1.4fr]">
         <div className="rounded-2xl border-2 border-ink bg-background p-7">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-ink font-display text-2xl font-semibold text-primary-foreground">KD</div>
@@ -451,8 +466,8 @@ export function Metrics() {
               </div>
             ))}
           </div>
-          <div className="mt-4 rounded-xl border-l-8 border-amber bg-amber-soft p-4">
-            <p className="font-semibold">Guardrail</p>
+          <div className="mt-4 rounded-xl border border-gold/30 bg-gold-soft p-4">
+            <p className="text-xs font-bold text-gold">Guardrail</p>
             <p className="text-sm">Agents' task completion must not drop by more than 5%.</p>
           </div>
           <div className="mt-4 rounded-xl border border-border p-4">
@@ -467,37 +482,39 @@ export function Metrics() {
 
 export function GoToMarket() {
   const road = [
-    ["2027–29", "One bank or UPI app, families first", "Cosign protection inside a partner's app: an elder's or teen's agent can't spend above their limit without a family cosign. Payments only."],
-    ["2030–34", "Data and contracts", "Data sharing through DPDP consent managers and contracts through e-sign. Any registered agent can send requests to a Cosign address."],
-    ["2035–40", "Default for irreversible actions", "Regulators expect a cosign for red actions, as RBI expects extra authentication for large e-mandates today."],
+    ["Year 1", "Families, direct", "A free connector for AI assistants and a paid Family plan. No bank contract needed; the goal is real users and real numbers."],
+    ["Year 2", "Banks and UPI apps", "“10,000 families already use Cosign” opens the door. Banks embed it and add the hard stop: no cosign, no payment."],
+    ["Year 3+", "Merchants, insurers, agent makers", "Cosign-verified orders for merchants, a cosign guarantee with an insurer, and know-your-agent certification for agent companies."],
   ];
   const pay = [
-    ["Banks and UPI apps", "Pay per protected user: fewer fraud losses and disputes, and a trust feature they don't have to build."],
-    ["Families", "A paid Circle plan for managing a parent's or teen's agents."],
-    ["Merchants, later", "Pay per verified receipt once signed receipts measurably cut returns."],
+    ["Families", "A Family plan for managing a parent's or teen's agents.", "Year 1"],
+    ["Banks and UPI apps", "Per protected customer per month: fewer fraud losses and disputes.", "Year 2"],
+    ["Agent companies", "Know-your-agent registration, so banks and merchants trust their agents.", "Year 2"],
+    ["Merchants", "Cosign-verified orders that cut fake returns and disputes.", "Year 3"],
+    ["Insurers", "A shared-premium guarantee on cosigned payments.", "Year 3"],
   ];
   const risks = [
-    ["The big UPI apps build it themselves", "Offer Cosign as a white-label layer; win banks and smaller apps first"],
+    ["Families won't pay", "Test with interviews first; free connector as the entry point"],
+    ["Without a bank, Cosign can't freeze money", "Control the agent's connector and alert the family until a bank or payment partner adds the hard stop"],
+    ["The big UPI apps build it themselves", "Offer Cosign as a white-label layer; win smaller banks and apps first"],
     ["Too many asks", "Tiers, mandates, rate limits and bundling"],
-    ["Fake requests", "Only registered, signed agents; number-matching for red actions"],
-    ["Agents skip Cosign", "The bank refuses amber and red actions without a token; regulation later"],
   ];
   return (
-    <Band id="market" label="Go to market" title="Launch where the money already sits: inside banks and UPI apps" tone="tint">
+    <Band id="market" label="Go to market" title="Families first to prove demand. Banks next for scale." tone="tint">
       <div className="grid gap-10 md:grid-cols-2">
         <p className="text-[17px] leading-relaxed">
-          People don't install safety apps until something goes wrong, and agents won't route to a stranger's service. But a bank holds the money — so it can <strong>refuse to release a payment above your limits without a cosign</strong>. That gives Cosign enforcement from day one, and the bank gets a trust feature it can market.
+          Banks buy slowly and want proof. Families feel the pain now — a parent's agent pushed by a seller, a teen's subscriptions. So Cosign starts <strong>direct to families</strong> through the AI assistants they already use, then takes that traction to banks, who add the <strong>hard stop</strong>: no cosign, no payment.
         </p>
-        <div className="rounded-2xl bg-sky p-6 text-white">
-          <p className="text-sm opacity-80">First use case</p>
+        <div className="rounded-2xl bg-ink p-6 text-primary-foreground">
+          <p className="text-sm text-[#e8c766]">First use case</p>
           <p className="mt-1 font-display text-2xl font-semibold leading-snug">“Your parents' agents can't spend above ₹1,000 without you.”</p>
-          <p className="mt-2 text-sm opacity-85">A clear payer, the adult child, and a clear fear: fraud aimed at elders.</p>
+          <p className="mt-2 text-sm opacity-80">A clear payer, the adult child, and a clear fear: fraud aimed at elders. The parent agrees and keeps their own phone.</p>
         </div>
       </div>
       <ol className="mt-12 grid gap-0 md:grid-cols-3">
         {road.map(([y, t, d], i) => (
           <li key={y} className="relative border-t-4 border-ink pr-6 pt-6">
-            <span className={`absolute -top-[10px] left-0 h-4 w-4 rounded-full ${i === 0 ? "bg-sky" : "bg-ink"}`} />
+            <span className={`absolute -top-[10px] left-0 h-4 w-4 rounded-full ${i === 0 ? "bg-gold-bright" : "bg-ink"}`} />
             <p className="font-display text-3xl font-semibold">{y}</p>
             <p className="mt-1 font-semibold">{t}</p>
             <p className="mt-1 pb-6 text-sm text-muted-foreground">{d}</p>
@@ -505,14 +522,16 @@ export function GoToMarket() {
         ))}
       </ol>
       <h3 className="mb-3 mt-10 text-xl font-semibold">Who pays (proposed)</h3>
-      <div className="grid gap-3 md:grid-cols-3">
-        {pay.map(([w, d]) => (
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {pay.map(([w, d, when]) => (
           <div key={w} className="rounded-xl border border-border bg-background p-4">
-            <p className="font-semibold">{w}</p>
+            <p className="text-xs font-bold text-gold">{when}</p>
+            <p className="mt-1 font-semibold">{w}</p>
             <p className="mt-1 text-sm text-muted-foreground">{d}</p>
           </div>
         ))}
       </div>
+      <p className="mt-3 text-sm text-muted-foreground">Not on the list: selling people's data. It would break trust in a trust product and run into DPDP rules.</p>
       <h3 className="mb-3 mt-10 text-xl font-semibold">Risks</h3>
       <div className="grid gap-3 md:grid-cols-2">
         {risks.map(([r, m]) => (

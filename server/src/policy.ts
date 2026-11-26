@@ -29,8 +29,8 @@ export function evaluate(body: RequestBody, ctx: PolicyContext): PolicyResult {
   const failedClaims = (body.sellerClaims ?? []).filter((c) => !c.verified);
   for (const c of failedClaims) reasons.push(`Seller claim failed verification: “${c.claim}”`);
 
-  const candidates = ctx.mandates.filter((m) => m.category === body.category);
-  if (candidates.length === 0) reasons.push(`No mandate covers “${body.category ?? "uncategorised"}”`);
+  const candidates = ctx.mandates.filter((m) => (m.state ?? "active") === "active" && (m.category === body.category || m.category === "*"));
+  if (candidates.length === 0) reasons.push(`No active mandate covers “${body.category ?? "uncategorised"}”`);
 
   let match: Mandate | undefined;
   for (const m of candidates) {

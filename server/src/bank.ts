@@ -20,8 +20,9 @@ export function verifyToken(token: string, keys: PublicKeys, now = Date.now()): 
   let claims: TokenClaims;
   try { claims = JSON.parse(fromB64u(p)); } catch { return { ok: false, reason: "Unreadable token" }; }
   if (claims.exp <= now) return { ok: false, reason: "Token expired" };
+  if (keys.revoked?.includes(claims.jti)) return { ok: false, reason: "Token was cancelled by the user (undo)" };
   if (claims.tier !== "green") {
-    const device = keys.devices[claims.sub];
+    const device = keys.devices[claims.approver ?? claims.sub]; // Family Circle: the approver's device signs
     if (!device || !claims.userSig || !verifyText(device, claims.reqHash, claims.userSig)) return { ok: false, reason: "Missing or invalid user signature for an amber/red action" };
   }
   return { ok: true, claims };
@@ -29,6 +30,7 @@ export function verifyToken(token: string, keys: PublicKeys, now = Date.now()): 
 
 export class MockBank {
   private readonly used = new Set<string>();
+  private readonly txns = new Map<string, { amount: number; refunded: boolean }>();
   private txn = 0;
   constructor(private readonly keys: () => PublicKeys, private readonly now: () => number = Date.now) {}
 
@@ -45,6 +47,17 @@ export class MockBank {
     if (c.amt !== p.amount) return { ok: false, reason: `Token approves ₹${c.amt}, not ₹${p.amount}` };
     this.used.add(c.jti);
     this.txn += 1;
-    return { ok: true, txnId: `TXN-${String(this.txn).padStart(5, "0")}`, decidedBy: c.decidedBy };
+    const txnId = `TXN-${String(this.txn).padStart(5, "0")}`;
+    this.txns.set(txnId, { amount: p.amount, refunded: false });
+    return { ok: true, txnId, decidedBy: c.decidedBy };
+  }
+
+  /** Refund after a Cosign undo (within the 48-hour window). */
+  refund(txnId: string): { ok: boolean; reason?: string } {
+    const t = this.txns.get(txnId);
+    if (!t) return { ok: false, reason: "Unknown transaction" };
+    if (t.refunded) return { ok: false, reason: "Already refunded" };
+    t.refunded = true;
+    return { ok: true };
   }
 }

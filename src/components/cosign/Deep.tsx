@@ -6,7 +6,7 @@ function Head({ id, label, title, kicker, dark = false, children }: { id: string
     <section id={id} className={`px-5 py-20 md:py-24 ${dark ? "bg-ink text-primary-foreground" : ""}`}>
       <div className="mx-auto max-w-[1240px]">
         <Reveal>
-          <p className={`text-sm font-semibold ${dark ? "text-[#9cc3e8]" : "text-sky"}`}>{label}</p>
+          <p className={`text-sm font-semibold ${dark ? "text-[#e8c766]" : "text-gold"}`}>{label}</p>
           <h2 className="mt-2 max-w-3xl text-[32px] font-semibold leading-[1.08] md:text-[46px]">{title}</h2>
           {kicker && <p className={`mt-4 max-w-2xl text-[17px] ${dark ? "opacity-80" : "text-muted-foreground"}`}>{kicker}</p>}
         </Reveal>
@@ -28,7 +28,7 @@ const PIPE: { who: string; step: string; detail: string; tone: "agent" | "cosign
 ];
 const toneCls = {
   agent: "bg-secondary text-ink",
-  cosign: "bg-sky text-white",
+  cosign: "bg-gold text-white",
   you: "bg-brand text-white",
   rail: "bg-ink text-primary-foreground",
 };
@@ -44,10 +44,10 @@ export function UnderTheHood() {
     <Head id="tech" label="Under the hood" title="Cosign doesn't watch agents. Agents must bring it a signed yes." kicker="The same reason UPI works: the bank won't move money without your PIN. Cosign doesn't invent a new protocol — it is the person's decision layer on top of standards that already exist.">
       <div className="grid gap-10 lg:grid-cols-[1.25fr_0.75fr]">
         <ol className="relative space-y-3">
-          <span className="absolute bottom-6 left-[27px] top-6 w-px bg-sky/40" aria-hidden />
+          <span className="absolute bottom-6 left-[27px] top-6 w-px bg-gold/40" aria-hidden />
           {PIPE.map((p, i) => (
             <li key={p.step} className="relative flex gap-4">
-              <span className="z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-sky/40 bg-background font-display text-xl font-semibold text-sky">{i + 1}</span>
+              <span className="z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-gold/40 bg-background font-display text-xl font-semibold text-gold">{i + 1}</span>
               <div className="flex-1 rounded-2xl border border-border p-4">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${toneCls[p.tone]}`}>{p.who}</span>
@@ -59,7 +59,7 @@ export function UnderTheHood() {
           ))}
         </ol>
         <div className="space-y-4">
-          <div className="rounded-2xl bg-sky-soft p-6">
+          <div className="rounded-2xl bg-gold-soft p-6">
             <p className="font-display text-xl font-semibold">Set up once</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li><span className="font-semibold">Agents register</span> and get a verified identity and signing key.</li>
@@ -75,8 +75,8 @@ export function UnderTheHood() {
               ))}
             </dl>
           </div>
-          <p className="rounded-2xl bg-amber-soft p-4 text-sm"><span className="font-semibold">The honest gap:</span> step 6 only works where the executor demands the token. That's why Cosign launches inside banks and UPI apps — they hold the money, so they can enforce it from day one.</p>
-          <p className="rounded-2xl border border-sky/40 bg-sky-soft p-4 text-sm"><span className="font-semibold">Working v0:</span> steps 1–7 run in code, with signatures, tokens, a mock bank and tests. See the <code>server/</code> folder in the project's code.</p>
+          <p className="rounded-2xl border border-gold/30 bg-gold-soft p-4 text-sm"><span className="font-semibold text-gold">The honest gap:</span> step 6 only works where the executor demands the token. Direct to families, Cosign controls the agent's payment connector and alerts the family; banks and UPI apps add the hard stop because they hold the money.</p>
+          <p className="rounded-2xl border border-gold/40 bg-gold-soft p-4 text-sm"><span className="font-semibold">Working v0:</span> steps 1–7 run in code, with signatures, tokens, a mock bank and tests — and you can run them yourself in the next section.</p>
         </div>
       </div>
     </Head>
@@ -90,8 +90,9 @@ export function BuildLog() {
     ["Researched the market with AI", "Used Claude to map 15+ players: NPCI's agent protocol, Pine Labs P3P, Razorpay, Visa, Mastercard, Google AP2, developer approval gateways and DPDP consent managers."],
     ["Pivoted on what we found", "The payment plumbing was already being built by much bigger players. So Cosign moved from “a new rail” to “the person's decision layer on top of the rails” — covering money, data and contracts — and got its new name."],
     ["Built a working prototype", "This website's phone demo, chat assistant, read-aloud and 2010–2040 journey — written in React with AI pair-programming."],
-    ["Built the core backend (v0)", "Real signed agent requests, a policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, a hash-chained receipt log and an MCP connector so a real AI assistant must ask first. The bank and money are simulated."],
-    ["Tested it", "12 automated backend tests (forgery, tampering, replay, flooding, expired tokens, edited receipts), every demo scenario clicked through on desktop and phone sizes, and an automated WCAG 2.1 AA check with no violations."],
+    ["Built the core backend (v0)", "Real signed agent requests, a policy engine, PIN-locked device keys, single-use approval tokens, a mock bank that refuses without a cosign, Family Circle approvals, seller-claim checks, 48-hour undo, a hash-chained receipt log and an MCP connector so a real AI assistant must ask first. The bank and money are simulated."],
+    ["Made it clickable", "A browser port of the engine on this page: real keys, signatures, PIN lock and bank checks running on the visitor's own device, so anyone can try the attacks."],
+    ["Tested it", "16 automated backend tests (forgery, tampering, replay, flooding, expired tokens, Family Circle, seller claims, undo, edited receipts), every demo scenario clicked through on desktop and phone sizes, and an automated WCAG 2.1 AA check with no violations."],
     ["What's next", "Five interviews with families managing a parent's finances, one conversation with a bank's digital team, and a pilot measuring regret rate and fraud stopped."],
   ];
   return (
@@ -99,7 +100,7 @@ export function BuildLog() {
       <ol className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {log.map(([t, d], i) => (
           <li key={t} className="rounded-2xl border border-border p-6">
-            <p className="font-display text-3xl font-semibold text-sky">{i + 1}</p>
+            <p className="font-display text-3xl font-semibold text-gold">{i + 1}</p>
             <p className="mt-2 text-lg font-semibold">{t}</p>
             <p className="mt-2 text-sm text-muted-foreground">{d}</p>
           </li>

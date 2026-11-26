@@ -1,6 +1,6 @@
 export type Action = "payment" | "data_share" | "contract";
 export type Tier = "green" | "amber" | "red" | "blocked";
-export type Status = "approved" | "pending" | "declined" | "blocked";
+export type Status = "approved" | "pending" | "declined" | "blocked" | "undone";
 
 /** What an agent asks for. Spec: docs/SPEC.md */
 export interface RequestBody {
@@ -14,7 +14,8 @@ export interface RequestBody {
   category?: string; // e.g. groceries, insurance
   data?: string[]; // for data_share: which fields
   recipient?: string; // for data_share / contract
-  sellerClaims?: { claim: string; verified: boolean }[];
+  /** Claims a seller made to the agent. Cosign re-checks "stock" claims against the seller's own feed. */
+  sellerClaims?: { claim: string; kind?: "stock"; value?: number; verified?: boolean }[];
   nonce: string; // unique per request, stops replays
   issuedAt: number; // ms since epoch, must be fresh
 }
@@ -26,7 +27,8 @@ export interface SignedRequest {
 
 export interface Mandate {
   id: string;
-  category: string;
+  category: string; // "*" covers every category (e.g. an elder's solo limit)
+  state?: "active" | "paused" | "revoked";
   maxPerAction: number;
   maxPerMonth: number;
   expiresAt: number;
@@ -55,8 +57,9 @@ export interface TokenClaims {
   recipient?: string;
   reqHash: string; // sha256 of the canonical request body
   tier: Exclude<Tier, "blocked">;
-  decidedBy: string; // "mandate:<id>" or "user:pin" or "user:pin+number-match"
-  userSig?: string; // device signature over reqHash (amber and red only)
+  decidedBy: string; // "mandate:<id>", "user:pin", "user:pin+number-match" or "circle:<approver>"
+  approver?: string; // who cosigned, when it isn't the account holder (Family Circle)
+  userSig?: string; // approver's device signature over reqHash (amber and red only)
   iat: number;
   exp: number;
 }

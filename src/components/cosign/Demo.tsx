@@ -238,7 +238,7 @@ export function Demo() {
       <div className="flex items-center justify-between rounded-2xl bg-ink p-4 text-primary-foreground">
         <div>
           <p className="text-xs opacity-70">Your decision address</p>
-          <p className="font-display text-xl font-bold">kavya<span className="text-[#9cc3e8]">@cosign</span></p>
+          <p className="font-display text-xl font-bold">kavya<span className="text-[#e8c766]">@cosign</span></p>
           <p className="mt-1 text-[11px] opacity-70">Every agent must ask here first</p>
         </div>
         <FakeQR size={52} />
@@ -614,7 +614,7 @@ export function Demo() {
               ))}
             </ol>
             <div className="rounded-2xl bg-ink p-6 text-primary-foreground" aria-live="polite">
-              <p className="text-sm text-[#9cc3e8]">What's happening</p>
+              <p className="text-sm text-[#e8c766]">What's happening</p>
               <p className="mt-2 font-display text-xl font-bold">{info ? info.title : "Kavya's Sunday morning"}</p>
               <p className="mt-2 leading-relaxed opacity-85">{info ? info.explain : "Mitra has already handled 14 routine things today under Kavya's mandates. One request is waiting: Arjun's school trip fee, a new payee, so it needs her cosign. Pick a moment on the left to see more."}</p>
             </div>
@@ -623,7 +623,7 @@ export function Demo() {
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="rounded-2xl border-4 border-ink bg-phone p-5 text-primary-foreground">
                   <p className="text-xs opacity-70">Mitra's screen (Kavya's laptop)</p>
                   <p className="mt-1 text-sm">Cosign is verifying this request. Match this number on your phone:</p>
-                  <p className="mt-2 font-display text-6xl font-extrabold tracking-widest text-[#9cc3e8]" id="mitra-number">{match.n}</p>
+                  <p className="mt-2 font-display text-6xl font-extrabold tracking-widest text-[#e8c766]" id="mitra-number">{match.n}</p>
                 </motion.div>
               )}
             </AnimatePresence>

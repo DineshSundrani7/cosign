@@ -4,6 +4,8 @@ import "./styles.css";
 import { Chat, FaqSection } from "./components/cosign/Chat";
 import { BuildLog, UnderTheHood } from "./components/cosign/Deep";
 import { Demo } from "./components/cosign/Demo";
+import { TwoDoors } from "./components/cosign/Doors";
+import { LiveEngine } from "./components/cosign/LiveEngine";
 import { Journey } from "./components/cosign/Journey";
 import { About, Footer, GoToMarket, Hero, How, Landscape, Metrics, Nav, Problem, Sources, Who } from "./components/cosign/Sections";
 
@@ -16,8 +18,10 @@ function Index() {
         <Hero />
         <Journey />
         <Problem />
+        <TwoDoors />
         <How />
         <UnderTheHood />
+        <LiveEngine />
         <Demo />
         <Landscape />
         <Who />

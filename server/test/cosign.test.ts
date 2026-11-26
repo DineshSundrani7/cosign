@@ -124,3 +124,63 @@ describe("Cosign v0", () => {
     assert.deepEqual(s.cosign.receipts.verify(), { ok: false, brokenAt: 0 });
   });
 });
+
+describe("Cosign v0 — families, sellers, undo and limits", () => {
+  let s: ReturnType<typeof setup>;
+  beforeEach(() => { s = setup(); });
+
+  function addMother() {
+    s.cosign.registerUser("sunanda@cosign", "4321", {
+      circleApprover: USER,
+      mandates: [{ id: "solo", category: "*", maxPerAction: 1000, maxPerMonth: 5000, expiresAt: Date.UTC(2041, 9, 1) }],
+      knownPayees: ["CarePlus Pharmacy"],
+    });
+    const sakhi = s.cosign.registerAgent("Sakhi", "sunanda@cosign");
+    return { agent: new AgentClient(sakhi.agentId, sakhi.privateKey, "sunanda@cosign"), agentId: sakhi.agentId };
+  }
+
+  it("Family Circle: a parent's small purchase goes through; a big one needs the child's PIN, not the parent's", () => {
+    const { agent, agentId } = addMother();
+    const small = s.cosign.submit(agent.request({ action: "payment", amount: 960, payee: "CarePlus Pharmacy", category: "medicines", purpose: "Monthly medicines", reversible: true }, now()));
+    assert.equal(small.tier, "green");
+    const big = s.cosign.submit(agent.request({ action: "payment", amount: 6200, payee: "Nagpur Physio Care", category: "health", purpose: "Knee brace + physio", reversible: true }, now()));
+    assert.equal(big.status, "pending");
+    assert.throws(() => s.cosign.approve(big.requestId, "4321"), /Wrong PIN/); // the parent's own PIN can't approve
+    const ok = s.cosign.approve(big.requestId, "1234"); // Kavya, the family approver
+    const claims = JSON.parse(fromB64u(ok.token!.split(".")[1]!));
+    assert.equal(claims.approver, USER);
+    assert.equal(claims.decidedBy, `circle:${USER}`);
+    assert.equal(s.bank.pay({ from: "sunanda@cosign", to: "Nagpur Physio Care", amount: 6200, agentId, token: ok.token }).ok, true);
+  });
+
+  it("checks a seller's “only 2 left” claim against the seller's own stock feed", () => {
+    s.cosign.setMerchantStock("FreshBasket", 38);
+    const d = s.cosign.submit(s.mitra.request({ ...groceries, sellerClaims: [{ claim: "Only 2 left", kind: "stock", value: 2 }] }, now()));
+    assert.equal(d.tier, "amber");
+    s.cosign.setMerchantStock("FreshBasket", 1);
+    const d2 = s.cosign.submit(s.mitra.request({ ...groceries, amount: 500, sellerClaims: [{ claim: "Only 2 left", kind: "stock", value: 2 }] }, now()));
+    assert.equal(d2.tier, "green"); // the claim was true
+  });
+
+  it("undo within 48 hours cancels an unused token; after 48 hours it's refused and a dispute is the route", () => {
+    const d = s.cosign.submit(s.mitra.request(groceries, now()));
+    s.cosign.undo(d.requestId);
+    const pay = s.bank.pay({ from: USER, to: "FreshBasket", amount: 2140, agentId: s.agentId, token: d.token });
+    assert.equal(pay.ok, false);
+    const d2 = s.cosign.submit(s.mitra.request({ ...groceries, amount: 800 }, now()));
+    clock += 49 * 60 * 60 * 1000;
+    assert.throws(() => s.cosign.undo(d2.requestId), /48-hour/);
+    const dispute = s.cosign.dispute(d2.requestId, "I never asked for this");
+    assert.ok(dispute.evidence.length >= 2);
+    assert.deepEqual(dispute.chain, { ok: true });
+  });
+
+  it("pausing or revoking a mandate sends the next request to the user", () => {
+    s.cosign.setMandateState(USER, "groceries", "paused");
+    assert.equal(s.cosign.submit(s.mitra.request(groceries, now())).tier, "amber");
+    s.cosign.setMandateState(USER, "groceries", "active");
+    assert.equal(s.cosign.submit(s.mitra.request(groceries, now())).tier, "green");
+    s.cosign.setMandateState(USER, "groceries", "revoked");
+    assert.throws(() => s.cosign.setMandateState(USER, "groceries", "active"), /revoked/);
+  });
+});
